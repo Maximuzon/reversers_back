@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, JSON
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
@@ -7,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'users'
+    tablename = 'users'
 
     user_id = Column(Integer, primary_key=True)
     login = Column(String(255), nullable=False, unique=True)
@@ -20,17 +19,17 @@ class User(Base):
     info_show = Column(Boolean, nullable=False)
     reset_code = Column(String(255), nullable=True)
     coins = Column(Integer, nullable=False, default=0)
-    avatar = Column(String(255), nullable=True)
+    avatar = Column(String(255), nullable=True) # ссылки на файловое хранилище 
     status = Column(String(255), nullable=False, default="active")
     token = Column(String(255), nullable=True, unique=True)
-    preferences = Column(String(255), nullable=True)
+    preferences = Column(String(255), nullable=True)#У Леши называется placeTags
     favourites = Column(String(255), nullable=True)
-    anchors = Column(String(255), nullable=True)
-    rewards = Column(String(255), nullable=True)
+    anchors = Column(String(255), nullable=True)#json
+    rewards = Column(String(255), nullable=True)#json 
     recommendations = Column(String(255), nullable=True)
 
 class Place(Base):
-    __tablename__ = 'places'
+    tablename = 'places'
 
     place_id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
@@ -53,7 +52,7 @@ class Place(Base):
 
 
 class Review(Base):
-    __tablename__ = 'reviews'
+    tablename = 'reviews'
 
     review_id = Column(Integer, primary_key=True)
     place_id = Column(Integer, ForeignKey('places.place_id'))
