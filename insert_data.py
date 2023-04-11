@@ -20,26 +20,26 @@ session = Session()
 #----------------------------------------------------------
 #DIC FOR USERS
 # user_data = [
-#     {
-#         'login': 'user1',
-#         'password': 'password1',
-#         'phone': '+1234567890',
-#         'email': 'user1@example.com',
-#         'age': 25,
-#         'profession': 'Engineer',
-#         'married': 'No',
-#         'info_show': True,
-#         'reset_code': None,
-#         'coins': 100,
-#         'avatar': None,
-#         'status': 'active',
-#         'token': None,
-#         'preferences': None,
-#         'favourites': None,
-#         'anchors': None,
-#         'rewards': None,
-#         'recommendations': None
-#     },
+    # {
+    #     'login': 'user1',
+    #     'password': 'password1',
+    #     'phone': '+1234567890',
+    #     'email': 'user1@example.com',
+    #     'age': 25,
+    #     'profession': 'Engineer',
+    #     'married': 'No',
+    #     'info_show': True,
+    #     'reset_code': None,
+    #     'coins': 100,
+    #     'avatar': None,
+    #     'status': 'active',
+    #     'token': None,
+    #     'preferences': None,
+    #     'favourites': None,
+    #     'anchors': None,
+    #     'rewards': None,
+    #     'recommendations': None
+    # },
 #     {
 #         'login': 'user2',
 #         'password': 'password2',

@@ -20,13 +20,13 @@ class User(Base):
     info_show = Column(Boolean, nullable=False)
     reset_code = Column(String(255), nullable=True)
     coins = Column(Integer, nullable=False, default=0)
-    avatar = Column(String(255), nullable=True)
+    avatar = Column(String(255), nullable=True) # ссылки на файловое хранилище 
     status = Column(String(255), nullable=False, default="active")
     token = Column(String(255), nullable=True, unique=True)
-    preferences = Column(String(255), nullable=True)
+    preferences = Column(String(255), nullable=True)#У Леши называется placeTags
     favourites = Column(String(255), nullable=True)
-    anchors = Column(String(255), nullable=True)
-    rewards = Column(String(255), nullable=True)
+    anchors = Column(String(255), nullable=True)#json
+    rewards = Column(String(255), nullable=True)#json 
     recommendations = Column(String(255), nullable=True)
 
 class Place(Base):
