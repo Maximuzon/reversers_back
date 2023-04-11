@@ -72,30 +72,30 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
 #     return results
 
 
-@app.get("/places/tags", response_model=list[GetAllPlaces]) 
-def read_places(db: Session = Depends(get_db)):
-    return db.query(Place).all()
-# @app.get("/places/tags", response_model=PlacesRead)
+# @app.get("/places/tags", response_model=list[GetAllPlaces]) 
 # def read_places(db: Session = Depends(get_db)):
 #     return db.query(Place).all()
+# # @app.get("/places/tags", response_model=PlacesRead)
+# # def read_places(db: Session = Depends(get_db)):
+# #     return db.query(Place).all()
 
 
-# @app.get("/places/tags", response_model=PlacesRead)
-# def read_tags(db: Session = Depends(get_db)):
-#     tags_query = db.query(schemas.Place.tags).distinct().all()
-#     tags_list = [tag[0] for tag in tags_query if tag[0] is not None]
-#     return tags_list
+# # @app.get("/places/tags", response_model=PlacesRead)
+# # def read_tags(db: Session = Depends(get_db)):
+# #     tags_query = db.query(schemas.Place.tags).distinct().all()
+# #     tags_list = [tag[0] for tag in tags_query if tag[0] is not None]
+# #     return tags_list
 
-# @app.get("/places/tags", response_model=List[PlacesRead])
-# def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     try:
-#         places =  db.query(Place.tags).offset(skip).limit(limit).all()
-#         return [PlacesRead.from_orm(place) for place in places]
-#     except Exception as e:
-#         traceback.print_exc()
-#         raise e
+# # @app.get("/places/tags", response_model=List[PlacesRead])
+# # def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+# #     try:
+# #         places =  db.query(Place.tags).offset(skip).limit(limit).all()
+# #         return [PlacesRead.from_orm(place) for place in places]
+# #     except Exception as e:
+# #         traceback.print_exc()
+# #         raise e
 
-# @app.get("/places/tags", response_model=List[str])
-# def read_tags(db: Session = Depends(get_db)):
-#     tags = db.query(Place.tags).distinct().all()
-#     return [tag[0] for tag in tags]
+# # @app.get("/places/tags", response_model=List[str])
+# # def read_tags(db: Session = Depends(get_db)):
+# #     tags = db.query(Place.tags).distinct().all()
+# #     return [tag[0] for tag in tags]
