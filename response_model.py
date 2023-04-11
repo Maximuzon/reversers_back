@@ -1,5 +1,11 @@
+
 from typing import List, Optional
+<<<<<<< HEAD
 from pydantic import BaseModel, EmailStr
+=======
+from pydantic import BaseModel
+
+>>>>>>> 5f9e5ac59c08639c2159d5ae35ed87180547fa58
 class UsersRead(BaseModel):
     user_id: int
     login: str
@@ -16,6 +22,7 @@ class UsersRead(BaseModel):
     favourites: Optional[str] = None
     anchors: Optional[str] = None #!!!!!!!!!!!!!!
     rewards: Optional[str] = None #!!!!!!!!!!!!!!
+<<<<<<< HEAD
     recommendations: Optional[str] = None
 
     class Config:
@@ -39,6 +46,8 @@ class CreateUser(BaseModel):
     favourites: Optional[str] = None
     anchors: Optional[str] = None #!!!!!!!!!!!!!!
     rewards: Optional[str] = None #!!!!!!!!!!!!!!
+=======
+>>>>>>> 5f9e5ac59c08639c2159d5ae35ed87180547fa58
     recommendations: Optional[str] = None
 
     class Config:
@@ -66,6 +75,7 @@ class PlacesRead(BaseModel):
     marks: Optional[List[str]]
 
     class Config:
+<<<<<<< HEAD
         orm_mode = True
         
 class GetAllPlaces(BaseModel):
@@ -76,3 +86,6 @@ class UserBase(BaseModel):
 
 
     
+=======
+        orm_mode = True
+>>>>>>> 5f9e5ac59c08639c2159d5ae35ed87180547fa58
