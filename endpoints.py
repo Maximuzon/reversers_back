@@ -9,9 +9,17 @@ from sqlalchemy.orm import sessionmaker
 from schemas import User,Place, Review
 from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces
 import schemas
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # здесь можно указать список разрешенных origin
+    allow_credentials=True,
+    allow_methods=["*"], # здесь можно указать список разрешенных HTTP методов
+    allow_headers=["*"], # здесь можно указать список разрешенных заголовков
+)
 
 # @app.get("/")
 # async def root():
@@ -27,7 +35,6 @@ def get_db():
     finally:
         db.close()
 # Endpoint to get all users
-
 
 #Get all users
 @app.get("/users", response_model=List[UsersRead])

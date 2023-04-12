@@ -9,6 +9,8 @@ class UsersRead(BaseModel):
     age: int
     profession: str
     married: str
+    gender: str
+    city: str
     info_show: bool
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
@@ -30,6 +32,8 @@ class CreateUser(BaseModel):
     phone: str
     email: str
     age: int
+    gender: str
+    city: str
     profession: str
     married: str
     info_show: bool

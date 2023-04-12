@@ -6,21 +6,23 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class User(Base):
-    tablename = 'users'
+    __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True)
-    login = Column(String(255), nullable=False, unique=True)
+    login = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
-    phone = Column(String(255), nullable=False)
+    phone = Column(String(255), nullable=False, unique=True)
     email = Column(String(255), nullable=False, unique=True)
-    age = Column(Integer, nullable=False)
+    age = Column(String(255), nullable=False)
     profession = Column(String(255), nullable=False)
     married = Column(String(255), nullable=False)
+    gender = Column(String(255), nullable=False)
+    city = Column(String(255), nullable=False)
     info_show = Column(Boolean, nullable=False)
     reset_code = Column(String(255), nullable=True)
     coins = Column(Integer, nullable=False, default=0)
     avatar = Column(String(255), nullable=True) # ссылки на файловое хранилище 
-    status = Column(String(255), nullable=False, default="active")
+    status = Column(String(255), nullable=False, default="client")
     token = Column(String(255), nullable=True, unique=True)
     preferences = Column(String(255), nullable=True)#У Леши называется placeTags
     favourites = Column(String(255), nullable=True)
@@ -29,7 +31,7 @@ class User(Base):
     recommendations = Column(String(255), nullable=True)
 
 class Place(Base):
-    tablename = 'places'
+    __tablename__ = 'places'
 
     place_id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
@@ -52,7 +54,7 @@ class Place(Base):
 
 
 class Review(Base):
-    tablename = 'reviews'
+    __tablename__ = 'reviews'
 
     review_id = Column(Integer, primary_key=True)
     place_id = Column(Integer, ForeignKey('places.place_id'))
