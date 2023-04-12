@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class User(Base):
-    tablename = 'users'
+    __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True)
     login = Column(String(255), nullable=False, unique=True)
@@ -29,7 +29,7 @@ class User(Base):
     recommendations = Column(String(255), nullable=True)
 
 class Place(Base):
-    tablename = 'places'
+    __tablename__ = 'places'
 
     place_id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
@@ -52,7 +52,7 @@ class Place(Base):
 
 
 class Review(Base):
-    tablename = 'reviews'
+    __tablename__ = 'reviews'
 
     review_id = Column(Integer, primary_key=True)
     place_id = Column(Integer, ForeignKey('places.place_id'))
