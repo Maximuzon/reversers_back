@@ -1,21 +1,22 @@
-
 import json
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, validator
+from typing import Dict
+from pydantic import BaseModel, EmailStr, validator, Json
 class UsersRead(BaseModel):
     user_id: int
     login: str
     phone: str
     email: str
-    age: int
+    age: str
     profession: str
     married: str
     gender: str
+    city: str
     info_show: bool
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
     status: str
-    preferences: Optional[str] = None
+    preferences: Dict[str, str] = None
     favourites: Optional[str] = None
     anchors: Optional[str] = None #!!!!!!!!!!!!!!
     rewards: Optional[str] = None #!!!!!!!!!!!!!!
@@ -31,15 +32,16 @@ class CreateUser(BaseModel):
     password: str
     phone: str
     email: str
-    age: int
+    age: str
     profession: str
+    city: str
     married: str
     gender:str
     info_show: bool
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
     status: str
-    preferences: Optional[str] = None
+    preferences: Dict[str, str] = None
     favourites: Optional[str] = None
     anchors: Optional[str] = None #!!!!!!!!!!!!!!
     rewards: Optional[str] = None #!!!!!!!!!!!!!!
