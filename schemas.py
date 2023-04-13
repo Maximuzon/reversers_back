@@ -24,7 +24,7 @@ class User(Base):
     avatar = Column(String(255), nullable=True) # ссылки на файловое хранилище 
     status = Column(String(255), nullable=False, default="client")
     token = Column(String(255), nullable=True, unique=True)
-    preferences = Column(String(255), nullable=True)#У Леши называется placeTags
+    preferences = Column(JSON, nullable=True)#У Леши называется placeTags
     favourites = Column(String(255), nullable=True)
     anchors = Column(String(255), nullable=True)#json
     rewards = Column(String(255), nullable=True)#json 
