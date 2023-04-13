@@ -1,16 +1,15 @@
-import array
 import json
-import traceback
 from typing import List
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, MetaData, func
 from sqlalchemy.orm import sessionmaker
 from schemas import User,Place, Review
-from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces
+from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
-
+#uvicorn endpoints:app --reload
 
 app = FastAPI()
 app.add_middleware(
@@ -70,7 +69,7 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
 #     query = db.query(getattr(schemas.Place, column_name)).distinct().all()
 #     unique_values = [value[0] for value in query if value[0] is not None]
 #     return unique_values
-
+#
 # @app.get("/places/column/{column_name}")
 # def get_unique_values(column_name: str, db: Session = Depends(get_db)):
 #     column = getattr(schemas.Place, column_name)  # Get the column object from the model class
@@ -82,27 +81,24 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
 # @app.get("/places/tags", response_model=list[GetAllPlaces]) 
 # def read_places(db: Session = Depends(get_db)):
 #     return db.query(Place).all()
-# # @app.get("/places/tags", response_model=PlacesRead)
-# # def read_places(db: Session = Depends(get_db)):
-# #     return db.query(Place).all()
 
+# @app.get("/places/tags/{place_id}", response_model=Placestags)
+# def read_places(place_id: int, db: Session = Depends(get_db)):
+#     return db.query(Place.tags).filter(Place.place_id == place_id )
+#______-----------
+# @app.get("/places/tags/{place_id}", response_model=Placestags)
+# def read_places(place_id: int, db: Session = Depends(get_db)):
+#     place = db.query(Place).filter(Place.place_id == place_id).first()
+#     tags = Place.tags  # Assuming Place object has a `tags` field
+#     return {"place_id": place.place_id,"tags": tags}
 
-# # @app.get("/places/tags", response_model=PlacesRead)
-# # def read_tags(db: Session = Depends(get_db)):
-# #     tags_query = db.query(schemas.Place.tags).distinct().all()
-# #     tags_list = [tag[0] for tag in tags_query if tag[0] is not None]
-# #     return tags_list
-
-# # @app.get("/places/tags", response_model=List[PlacesRead])
-# # def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-# #     try:
-# #         places =  db.query(Place.tags).offset(skip).limit(limit).all()
-# #         return [PlacesRead.from_orm(place) for place in places]
-# #     except Exception as e:
-# #         traceback.print_exc()
-# #         raise e
-
-# # @app.get("/places/tags", response_model=List[str])
-# # def read_tags(db: Session = Depends(get_db)):
-# #     tags = db.query(Place.tags).distinct().all()
-# #     return [tag[0] for tag in tags]
+# @app.get("/places/tags")
+# def get_places():
+#     with Session(get_db) as session:
+#         places = session.query(Place.place_id, Place.tags).all()
+#         return places
+@app.get("/places/{place_id}/tags", response_model=GetAllPlaces)
+async def read_place_tags(place_id: int, db: Session = Depends(get_db)):
+    place = db.query(Place).filter(Place.place_id == place_id).first()
+    tags = json.loads(place.tags)
+    return tags

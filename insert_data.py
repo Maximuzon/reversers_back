@@ -1,4 +1,5 @@
 
+import json
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, JSON
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
@@ -79,28 +80,46 @@ session = Session()
 #----------------------------------------------------------
 #Places
 #----------------------------------------------------------
-for i in range(10):
-    place = Place(
-        name=f'Place {i}',
-        city_name='New York',
-        two_gis_url=f'https://2gis.com/{i}',
-        geometry_name='Point',
-        phone='555-555-5555',
-        short_description='A cool place',
-        long_description='This place is really cool',
-        likes=2*i,
-        instagram_link='https://instagram.com',
-        category='Entertainment',
-        subcategory='Cinema',
-        start_work_time='9:00',
-        end_work_time='22:00',
-        tags=['tag1', 'tag2', 'tag3'],
-        images=['https://placeimg.com/640/480/any'] * 3,
-        marks=[3, 4, 5]
-    )
-    session.add(place)
+# for i in range(10):
+#     place = Place(
+#         name=f'Place {i}',
+#         city_name='New York',
+#         two_gis_url=f'https://2gis.com/{i}',
+#         geometry_name='Point',
+#         phone='555-555-5555',
+#         short_description='A cool place',
+#         long_description='This place is really cool',
+#         likes=2*i,
+#         instagram_link='https://instagram.com',
+#         category='Entertainment',
+#         subcategory='Cinema',
+#         start_work_time='9:00',
+#         end_work_time='22:00',
+#         tags= json.dumps(['newtag', 'faulttag', '12iqtag']),
+#         images=['https://placeimg.com/640/480/any'] * 3,
+#         marks=[3, 4, 5]
+#     )
+#     session.add(place)
 
-
+place = Place(
+    name=f'Place after json mistake',
+    city_name='New York',
+    two_gis_url=f'https://2gis.com/json_mistake',
+    geometry_name='Point',
+    phone='555-555-5555',
+    short_description='A cool place',
+    long_description='This place is really cool',
+    likes=2*12,
+    instagram_link='https://instagram.com',
+    category='Entertainment',
+    subcategory='Cinema',
+    start_work_time='9:00',
+    end_work_time='22:00',
+    tags= json.dumps(['newtag', 'faulttag', '12iqtag']),
+    images=['https://placeimg.com/640/480/asds'] * 3,
+    marks=[4,6,2]
+)
+session.add(place)
 
 
 #----------------------------------------------------------
@@ -109,16 +128,16 @@ for i in range(10):
 
 
 
-new_review = Review(
-    place_id=3,
-    user_id=2,
-    date=now,
-    text='WAASSSSSSSSSSSSSSSSSSS!',
-    mark=4
-)
+# new_review = Review(
+#     place_id=3,
+#     user_id=2,
+#     date=now,
+#     text='WAASSSSSSSSSSSSSSSSSSS!',
+#     mark=4
+# )
 
 # Add the review to the session
-session.add(new_review)
+# session.add(new_review)
 
 # Commit the transaction to the database
 session.commit()

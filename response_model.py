@@ -1,6 +1,7 @@
 
+import json
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 class UsersRead(BaseModel):
     user_id: int
     login: str
@@ -9,8 +10,6 @@ class UsersRead(BaseModel):
     age: int
     profession: str
     married: str
-    gender: str
-    city: str
     info_show: bool
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
@@ -32,8 +31,6 @@ class CreateUser(BaseModel):
     phone: str
     email: str
     age: int
-    gender: str
-    city: str
     profession: str
     married: str
     info_show: bool
@@ -69,12 +66,24 @@ class PlacesRead(BaseModel):
     tags: Optional[List[str]]
     images: Optional[List[str]]
     marks: Optional[List[str]]
-
+        
+class Placestags(BaseModel):
+    place_id: int
+    tags :str
+    @validator('tags')
+    def parse_tags(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except (ValueError, TypeError):
+                pass
+        raise ValueError('tags must be a JSON-encoded string')
+        
     class Config:
         orm_mode = True
-        
+            
 class GetAllPlaces(BaseModel):
-    tags: str
+    tags: List[str]
         
 class UserBase(BaseModel):
     email: EmailStr
