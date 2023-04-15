@@ -67,7 +67,7 @@ def read_places(place_id: int, db: Session = Depends(get_db)):
 
 #add NEW PLACE
 @app.post("/places")
-def create_user(place: CreatePlace, db: Session = Depends(get_db)):
+def create_place(place: CreatePlace, db: Session = Depends(get_db)):
     db_place = schemas.Place(**place.dict())
     db.add(db_place)
     db.commit()
