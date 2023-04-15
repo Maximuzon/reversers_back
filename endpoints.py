@@ -93,16 +93,33 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
     db.refresh(db_review)
     return db_review
 
-#Get all places
-@app.get("/tags")
-async def get_all_tags(db: Session = Depends(get_db)):
-    tags = (
-        db.query(Place.tags)
-        .distinct(Place.tags)
-        .all()
-    )
-    return {"tags": [tag[0] for tag in tags]}
+# #Get all places
+# @app.get("/tags")
+# async def get_all_tags(db: Session = Depends(get_db)):
+#     tags = (
+#         db.query(Place.tags)
+#         .distinct(Place.tags)
+#         .all()
+#     )
+#     merged_tags = {}
+#     for tags in tags:
+#         for key, value in tags.items():
+#             if key not in merged_tags:
+#                 merged_tags[key] = [value]
+#             else:
+#                 merged_tags[key].append(value)    
+#     return merged_tags
 
+
+
+#Get all places
+@app.get("/tags/new")
+def get_all_tags(db: Session = Depends(get_db)):
+    tags = {}
+    places = db.query(Place).all()
+    for place in places:
+        tags.update(place.tags)
+    return tags.items()
 #Get user_id
 
 
