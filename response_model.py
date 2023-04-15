@@ -111,7 +111,7 @@ class ReviewRead(BaseModel):
         orm_mode = True
 
 class CreateReview(BaseModel):
-    review_id: int
+    review_id: int  
     place_id: int
     user_id: int
     date: Timestamp

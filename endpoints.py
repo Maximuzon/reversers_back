@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, MetaData, func
+from sqlalchemy import Select, create_engine, MetaData, func
 from sqlalchemy.orm import sessionmaker
 from schemas import User,Place, Review
 from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace,CreateReview
@@ -93,6 +93,20 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
     db.refresh(db_review)
     return db_review
 
+#Get all places
+@app.get("/tags")
+async def get_all_tags(db: Session = Depends(get_db)):
+    tags = (
+        db.query(Place.tags)
+        .distinct(Place.tags)
+        .all()
+    )
+    return {"tags": [tag[0] for tag in tags]}
+
+#Get user_id
+
+
+#return user
 
 
 # #Get all REVIEWS
