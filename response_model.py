@@ -67,9 +67,12 @@ class PlacesRead(BaseModel):
     subcategory: str
     start_work_time: Optional[str]
     end_work_time: Optional[str]
-    tags: Dict[str, str] = None
+    tags: Dict[str, Optional[str]] = None
     images: Optional[List[str]] = None
-    marks: Dict[str, str] = None
+    marks: Dict[str, Optional[str]] = None
+    class Config:
+        orm_mode = True
+
 
 class CreatePlace(BaseModel):
     place_id: int
@@ -86,9 +89,9 @@ class CreatePlace(BaseModel):
     subcategory: Optional[str]
     start_work_time: Optional[str]
     end_work_time: Optional[str]
-    tags: Dict[str, str] = None
+    tags: Dict[str, Optional[str]] = None
     images: Optional[List[str]] = None
-    marks: Dict[str, str] = None
+    marks: Dict[str, Optional[str]] = None
 
     class Config:
         orm_mode = True
