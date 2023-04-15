@@ -61,7 +61,7 @@ def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return db.query(Place).offset(skip).limit(limit).all()
 
 #Get specific PLACE based on id
-@app.get("/places/id/{place_id}", response_model=PlacesRead)
+@app.get("/places/{place_id}", response_model=PlacesRead)
 def read_places(place_id: int, db: Session = Depends(get_db)):
     return db.query(Place).filter(Place.place_id == place_id ).first()
 
@@ -74,6 +74,10 @@ def create_place(place: CreatePlace, db: Session = Depends(get_db)):
     db.refresh(db_place)
     return db_place
 
+#Get all REVIEWS
+@app.get("/reviews", response_model=List[Revi])
+def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(Place).offset(skip).limit(limit).all()
 
 
 # @app.get("/places/column/{column_name}", response_model=List[str])

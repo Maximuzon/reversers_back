@@ -67,8 +67,8 @@ class PlacesRead(BaseModel):
     subcategory: str
     start_work_time: Optional[str]
     end_work_time: Optional[str]
-    tags: Optional[List[str]]
-    images: Optional[List[str]]
+    tags: Dict[str, str] = None
+    images: Optional[List[str]] = None
     marks: Optional[List[str]]
 
 class CreatePlace(BaseModel):
@@ -86,8 +86,8 @@ class CreatePlace(BaseModel):
     subcategory: str
     start_work_time: Optional[str]
     end_work_time: Optional[str]
-    tags: Optional[List[str]]
-    images: Optional[List[str]]
+    tags: Dict[str, str] = None
+    images: Optional[List[str]] = None
     marks: Optional[List[str]]
 
     class Config:
