@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, MetaData, func
 from sqlalchemy.orm import sessionmaker
 from schemas import User,Place, Review
-from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags
+from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
 #uvicorn endpoints:app --reload
@@ -45,6 +45,16 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def read_users(user_id:int, db: Session = Depends(get_db)):
     return db.query(User).filter(User.user_id == user_id ).first()
 
+#Insert NEW USER to user table
+@app.post("/users")
+def create_user(user: CreateUser, db: Session = Depends(get_db)):
+    db_user = schemas.User(**user.dict())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
 #Get all places
 @app.get("/places", response_model=List[PlacesRead])
 def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -55,14 +65,16 @@ def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def read_places(place_id: int, db: Session = Depends(get_db)):
     return db.query(Place).filter(Place.place_id == place_id ).first()
 
-#Insert NEW USER to user table
-@app.post("/users")
-def create_user(user: CreateUser, db: Session = Depends(get_db)):
-    db_user = schemas.User(**user.dict())
-    db.add(db_user)
+#add NEW PLACE
+@app.post("/places")
+def create_user(place: CreatePlace, db: Session = Depends(get_db)):
+    db_place = schemas.Place(**place.dict())
+    db.add(db_place)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_place)
+    return db_place
+
+
 
 # @app.get("/places/column/{column_name}", response_model=List[str])
 # def get_unique_values(column_name: str, db: Session = Depends(get_db)):

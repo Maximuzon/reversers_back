@@ -70,6 +70,31 @@ class PlacesRead(BaseModel):
     tags: Optional[List[str]]
     images: Optional[List[str]]
     marks: Optional[List[str]]
+
+class CreatePlace(BaseModel):
+    place_id: int
+    name: str
+    city_name: str
+    two_gis_url: str
+    geometry_name: str
+    phone: Optional[str]
+    short_description: Optional[str]
+    long_description: Optional[str]
+    likes: int
+    instagram_link: Optional[str]
+    category: str
+    subcategory: str
+    start_work_time: Optional[str]
+    end_work_time: Optional[str]
+    tags: Optional[List[str]]
+    images: Optional[List[str]]
+    marks: Optional[List[str]]
+
+    class Config:
+        orm_mode = True
+
+
+
         
 class Placestags(BaseModel):
     place_id: int
