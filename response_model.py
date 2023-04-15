@@ -69,26 +69,26 @@ class PlacesRead(BaseModel):
     end_work_time: Optional[str]
     tags: Dict[str, str] = None
     images: Optional[List[str]] = None
-    marks: Optional[List[str]]
+    marks: Dict[str, str] = None
 
 class CreatePlace(BaseModel):
     place_id: int
     name: str
-    city_name: str
-    two_gis_url: str
-    geometry_name: str
+    city_name: Optional[str]
+    two_gis_url: Optional[str]
+    geometry_name: Optional[str]
     phone: Optional[str]
     short_description: Optional[str]
     long_description: Optional[str]
     likes: int
     instagram_link: Optional[str]
-    category: str
-    subcategory: str
+    category: Optional[str]
+    subcategory: Optional[str]
     start_work_time: Optional[str]
     end_work_time: Optional[str]
     tags: Dict[str, str] = None
     images: Optional[List[str]] = None
-    marks: Optional[List[str]]
+    marks: Dict[str, str] = None
 
     class Config:
         orm_mode = True
