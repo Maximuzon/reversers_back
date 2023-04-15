@@ -1,7 +1,9 @@
 import json
 from typing import List, Optional
 from typing import Dict
+from MySQLdb import Timestamp
 from pydantic import BaseModel, EmailStr, validator, Json
+from sqlalchemy import DateTime
 class UsersRead(BaseModel):
     user_id: int
     login: str
@@ -32,15 +34,15 @@ class CreateUser(BaseModel):
     password: str
     phone: str
     email: str
-    age: str
-    profession: str
-    city: str
-    married: str
-    gender:str
+    age: Optional[str]
+    profession: Optional[str]
+    city: Optional[str]
+    married: Optional[str]
+    gender:Optional[str]
     info_show: bool
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
-    status: str
+    status: Optional[str]
     preferences: Dict[str, str] = None
     favourites: Optional[str] = None
     anchors: Optional[str] = None #!!!!!!!!!!!!!!
@@ -96,7 +98,29 @@ class CreatePlace(BaseModel):
     class Config:
         orm_mode = True
 
+class ReviewRead(BaseModel):
+    review_id: int
+    place_id: int
+    user_id: int
+    date: Timestamp
+    text: str
+    mark: int
+    image: Optional[str]
 
+    class Config:
+        orm_mode = True
+
+class CreateReview(BaseModel):
+    review_id: int
+    place_id: int
+    user_id: int
+    date: Timestamp
+    text: str
+    mark: int
+    image: Optional[str]
+
+    class Config:
+        orm_mode = True
 
         
 class Placestags(BaseModel):
