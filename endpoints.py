@@ -113,13 +113,35 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
 
 
 #Get all places
-@app.get("/tags/new")
-def get_all_tags(db: Session = Depends(get_db)):
+# @app.get("/tags/new")
+# def get_all_tags(db: Session = Depends(get_db)):
+#     tags = {}
+#     places = db.query(Place).all()
+#     for place in places:
+#         tags.update(place.tags)
+#     return tags.items()
+
+
+
+@app.get("/tags")
+async def get_all_tags(db: Session = Depends(get_db)):
     tags = {}
-    places = db.query(Place).all()
-    for place in places:
-        tags.update(place.tags)
-    return tags.items()
+    try:
+        # retrieve all rows from the places table
+        query = Select(Place.tags)
+        result = db.execute(query)
+        # extract tags from each row and add to the tags dictionary
+        for row in result:
+            row_tags = row[0]
+            for key, value in row_tags.items():
+                tags.setdefault(key, []).append(value)
+        # convert sets to lists
+        for key in tags:
+            tags[key] = list(set(tags[key]))
+        return {"tags": tags}
+    finally:
+        db.close()
+
 #Get user_id
 
 
