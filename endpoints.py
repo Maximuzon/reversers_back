@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, MetaData, func
 from sqlalchemy.orm import sessionmaker
 from schemas import User,Place, Review
-from response_model import UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace
+from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace,CreateReview
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
 #uvicorn endpoints:app --reload
@@ -74,10 +74,31 @@ def create_place(place: CreatePlace, db: Session = Depends(get_db)):
     db.refresh(db_place)
     return db_place
 
-#Get all REVIEWS
-@app.get("/reviews", response_model=List[Revi])
-def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return db.query(Place).offset(skip).limit(limit).all()
+#Get all REVIEW
+@app.get("/places", response_model=List[ReviewRead])
+def read_review(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(Review).offset(skip).limit(limit).all()
+
+#Get specific REVIEW based on id
+@app.get("/review/{place_id}", response_model=ReviewRead)
+def read_places(place_id: int, db: Session = Depends(get_db)):
+    return db.query(Review).filter(Place.place_id == place_id ).first()
+
+#add new REVIEW
+@app.post("/reviews")
+def create_review(place: CreateReview, db: Session = Depends(get_db)):
+    db_review = schemas.Review(**place.dict())
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
+    return db_review
+
+
+
+# #Get all REVIEWS
+# @app.get("/reviews", response_model=List[Revi])
+# def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     return db.query(Place).offset(skip).limit(limit).all()
 
 
 # @app.get("/places/column/{column_name}", response_model=List[str])
@@ -113,8 +134,3 @@ def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 #     with Session(get_db) as session:
 #         places = session.query(Place.place_id, Place.tags).all()
 #         return places
-@app.get("/places/{place_id}/tags", response_model=GetAllPlaces)
-async def read_place_tags(place_id: int, db: Session = Depends(get_db)):
-    place = db.query(Place).filter(Place.place_id == place_id).first()
-    tags = json.loads(place.tags)
-    return tags
