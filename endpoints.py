@@ -122,6 +122,25 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
 #     return tags.items()
 
 
+#GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# @app.get("/tags")
+# async def get_all_tags(db: Session = Depends(get_db)):
+#     tags = {}
+#     try:
+#         # retrieve all rows from the places table
+#         query = Select(Place.tags)
+#         result = db.execute(query)
+#         # extract tags from each row and add to the tags dictionary
+#         for row in result:
+#             row_tags = row[0]
+#             for key, value in row_tags.items():
+#                 tags.setdefault(key, []).append(value)
+#         # convert sets to lists
+#         for key in tags:
+#             tags[key] = list(set(tags[key]))
+#         return {"tags": tags}
+#     finally:
+#         db.close()
 
 @app.get("/tags")
 async def get_all_tags(db: Session = Depends(get_db)):
@@ -135,12 +154,9 @@ async def get_all_tags(db: Session = Depends(get_db)):
             row_tags = row[0]
             for key, value in row_tags.items():
                 tags.setdefault(key, []).append(value)
-        # convert sets to lists
-        for key in tags:
-            tags[key] = list(set(tags[key]))
         return {"tags": tags}
     finally:
-        db.close()
+        db.close()       
 
 #Get user_id
 
