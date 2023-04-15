@@ -93,22 +93,27 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
     db.refresh(db_review)
     return db_review
 
-# #Get all places
+
+# #RETRIEVE ALL TAGS
 # @app.get("/tags")
 # async def get_all_tags(db: Session = Depends(get_db)):
-#     tags = (
-#         db.query(Place.tags)
-#         .distinct(Place.tags)
-#         .all()
-#     )
-#     merged_tags = {}
-#     for tags in tags:
-#         for key, value in tags.items():
-#             if key not in merged_tags:
-#                 merged_tags[key] = [value]
-#             else:
-#                 merged_tags[key].append(value)    
-#     return merged_tags
+#     tags = {}
+#     try:
+#         # retrieve all rows from the places table
+#         query = Select(Place.tags)
+#         result = db.execute(query)
+#         # extract tags from each row and add to the tags dictionary
+#         for row in result:
+#             row_tags = row[0]
+#             for key, value in row_tags.items():
+#                 tags.setdefault(key, []).append(value)
+#         return {"tags": tags}
+#     finally:
+#         db.close()       
+
+#Get user_id
+
+
 
 
 
@@ -123,25 +128,6 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
 
 
 #GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# @app.get("/tags")
-# async def get_all_tags(db: Session = Depends(get_db)):
-#     tags = {}
-#     try:
-#         # retrieve all rows from the places table
-#         query = Select(Place.tags)
-#         result = db.execute(query)
-#         # extract tags from each row and add to the tags dictionary
-#         for row in result:
-#             row_tags = row[0]
-#             for key, value in row_tags.items():
-#                 tags.setdefault(key, []).append(value)
-#         # convert sets to lists
-#         for key in tags:
-#             tags[key] = list(set(tags[key]))
-#         return {"tags": tags}
-#     finally:
-#         db.close()
-
 @app.get("/tags")
 async def get_all_tags(db: Session = Depends(get_db)):
     tags = {}
@@ -154,12 +140,12 @@ async def get_all_tags(db: Session = Depends(get_db)):
             row_tags = row[0]
             for key, value in row_tags.items():
                 tags.setdefault(key, []).append(value)
+        # convert sets to lists
+        for key in tags:
+            tags[key] = list(set(tags[key]))
         return {"tags": tags}
     finally:
-        db.close()       
-
-#Get user_id
-
+        db.close()
 
 #return user
 
