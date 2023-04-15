@@ -74,10 +74,6 @@ def create_place(place: CreatePlace, db: Session = Depends(get_db)):
     db.refresh(db_place)
     return db_place
 
-#Get all REVIEWS
-@app.get("/reviews", response_model=List[Revi])
-def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return db.query(Place).offset(skip).limit(limit).all()
 
 
 # @app.get("/places/column/{column_name}", response_model=List[str])
