@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import Select, create_engine, MetaData, func
 from sqlalchemy.orm import sessionmaker
+import uvicorn
 from schemas import User,Place, Review
 from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace,CreateReview
 import schemas
@@ -189,3 +190,6 @@ async def get_all_tags(db: Session = Depends(get_db)):
 #     with Session(get_db) as session:
 #         places = session.query(Place.place_id, Place.tags).all()
 #         return places
+
+if __name__ == "__main__":
+    uvicorn.run(app,host='0.0.0.0', port = 8000)
