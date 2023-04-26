@@ -68,7 +68,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     print("file uploaded")
     # Update the existing record in the database with the new image URL
 
-    url = f"https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}"
+    url = "https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}".format(bucket_name, object_key)
     print(url)
     stmt = (update(Place).where(Place.place_id==place_id).values(images = url))
     db.execute(stmt)
