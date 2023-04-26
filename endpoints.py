@@ -63,8 +63,10 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     print("decoded file")
     filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     print("set filename")
-    object_key = f"images/{filename}"
+    print(filename)
+    object_key = f"base/{filename}"
     print("set object key")
+    print(object_key)
     s3.upload_file(file, bucket_name, object_key)
     print("file uploaded")
     print("Lexa durrrak")
