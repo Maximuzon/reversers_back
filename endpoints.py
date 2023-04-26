@@ -58,7 +58,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     bucket_name = 'reversers-images'
     file_contents = await file.read()
     file = BytesIO(file_contents)
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
+    filename = datetime.now().strftime('%Y%m%d%H%M%S%f')
     object_key = f"images/{filename}"
     s3.upload_file(file, bucket_name, object_key)
 
