@@ -98,6 +98,13 @@ class CreatePlace(BaseModel):
     class Config:
         orm_mode = True
 
+class createurl(BaseModel):
+    place_id:int
+    url: str
+
+    class config:
+        orm_mode = True
+
 class ReviewRead(BaseModel):
     review_id: int
     place_id: int

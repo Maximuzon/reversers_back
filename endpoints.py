@@ -70,11 +70,11 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     s3.upload_fileobj(file, bucket_name, object_key)
     print("file uploaded")
     # Update the existing record in the database with the new image URL
-    query = text(f"UPDATE places SET images='https://{bucket_name}.fra1.digitaloceanspaces.com//{object_key}' WHERE place_id={place_id}")
-    print(query)
-    print("query added")
-    db.execute(query)
+
+    place = db.query(Place).filter_by(place_id=place_id).first()
+    place.images = f"https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}"
     db.commit()
+    print("query added")
 
     return {"filename": filename}
 
@@ -99,8 +99,7 @@ async def get_image(place_id: int, db: Session = Depends(get_db)):
 @app.get("/users/raw/sql/{user_id}")
 def get_raw_users(user_id:int, db: Session = Depends(get_db)):
     query = text(f"select user_id, login, phone from users where user_id = {user_id}")
-    
-    result = db.execute(query).fetchmany()
+    result = db.execute(query).fetchone()
     
     if result is not None:
         print(result)
