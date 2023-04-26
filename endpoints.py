@@ -56,8 +56,9 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
     # Save the image to DigitalOcean Spaces
     bucket_name = 'reversers-images'
-    file = BytesIO(file.read())
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    file_contents = await file.read()
+    file = BytesIO(file_contents)
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
     object_key = f"images/{filename}"
     s3.upload_file(file.file, bucket_name, object_key)
 
