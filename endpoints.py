@@ -1,3 +1,4 @@
+from io import BytesIO
 import json
 from typing import List
 from fastapi import FastAPI, Depends,File, UploadFile
@@ -55,7 +56,8 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
     # Save the image to DigitalOcean Spaces
     bucket_name = 'reversers-images'
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
+    file = BytesIO(file.read())
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     object_key = f"images/{filename}"
     s3.upload_file(file.file, bucket_name, object_key)
 
