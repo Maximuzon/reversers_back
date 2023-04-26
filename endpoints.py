@@ -4,7 +4,7 @@ from typing import List
 from fastapi import FastAPI, Depends,File, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import Select, create_engine, MetaData, text
+from sqlalchemy import Select, create_engine, MetaData, text, insert,update
 from sqlalchemy.orm import sessionmaker
 import uvicorn
 from schemas import User,Place, Review
@@ -56,13 +56,10 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
     # Save the image to DigitalOcean Spaces
     bucket_name = 'reversers-images'
-    print("got bucket name")
     file_contents = await file.read()
-    print("received file_contents")
     file = BytesIO(file_contents)
-    print("decoded file")
     filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-    print("set filename")
+
     print(filename)
     object_key = f"base/{filename}"
     print("set object key")
@@ -71,12 +68,29 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     print("file uploaded")
     # Update the existing record in the database with the new image URL
 
-    place = db.query(Place).filter_by(place_id=place_id).first()
-    place.images = f"https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}"
+    url = "https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}"
+    stmt = (update(Place).where(Place.place_id==place_id).values(images = url))
+    db.execute(stmt)
     db.commit()
     print("query added")
 
-    return {"filename": filename}
+
+@app.get("/getimage/{place_id}")
+def get_image(place_id:int, db:Session = Depends(get_db)):
+    place = db.query(Place).filter(Place.place_id == place_id).first()
+    return {"url": place.images}
+
+
+@app.get("/places/new/hz/cho/{place_id}")
+def return_place_new(place_id: int,db: Session = Depends(get_db)):
+    place = db.query(Place).filter_by(place_id=place_id).first()
+    return place
+
+@app.post("/places/new/hz/cho/{place_id}/{insert_text}")
+def return_place_new(place_id: int,insert_text:str,db: Session = Depends(get_db)):
+    stmt = (update(Place).where(Place.place_id==place_id).values(short_description = insert_text))  
+    db.execute(stmt)
+    db.commit()
 
 
 @app.get("/getimage/{place_id}")

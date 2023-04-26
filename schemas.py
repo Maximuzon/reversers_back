@@ -48,7 +48,7 @@ class Place(Base):
     start_work_time = Column(String(255), nullable=True)
     end_work_time = Column(String(255), nullable=True)
     tags = Column(JSON, nullable=True)
-    images = Column(JSON, nullable=True)
+    images = Column(String(1000), nullable=True)
     marks = Column(JSON, nullable=True)
 
 
