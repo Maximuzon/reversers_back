@@ -20,56 +20,56 @@ session = Session()
 #Users
 #----------------------------------------------------------
 #DIC FOR USERS
-# user_data = [
-    # {
-    #     'login': 'user1',
-    #     'password': 'password1',
-    #     'phone': '+1234567890',
-    #     'email': 'user1@example.com',
-    #     'age': 25,
-    #     'profession': 'Engineer',
-    #     'married': 'No',
-    #     'info_show': True,
-    #     'reset_code': None,
-    #     'coins': 100,
-    #     'avatar': None,
-    #     'status': 'active',
-    #     'token': None,
-    #     'preferences': None,
-    #     'favourites': None,
-    #     'anchors': None,
-    #     'rewards': None,
-    #     'recommendations': None
-    # },
-#     {
-#         'login': 'user2',
-#         'password': 'password2',
-#         'phone': '+2345678901',
-#         'email': 'user2@example.com',
-#         'age': 30,
-#         'profession': 'Teacher',
-#         'married': 'Yes',
-#         'info_show': False,
-#         'reset_code': 'abcd1234',
-#         'coins': 200,
-#         'avatar': 'user2.jpg',
-#         'status': 'inactive',
-#         'token': 'xyz789',
-#         'preferences': 'Sports',
-#         'favourites': 'Music',
-#         'anchors': 'Beaches',
-#         'rewards': 'Coupons',
-#         'recommendations': 'Movies'
-#     }
-# ]
+user_data = [
+    {
+        'login': 'user1',
+        'password': 'password1',
+        'phone': '+1234567890',
+        'email': 'user1@example.com',
+        'age': 25,
+        'profession': 'Engineer',
+        'married': 'No',
+        'info_show': True,
+        'reset_code': None,
+        'coins': 100,
+        'avatar': None,
+        'status': 'active',
+        'token': None,
+        'preferences': None,
+        'favourites': None,
+        'anchors': None,
+        'rewards': None,
+        'recommendations': None
+    },
+    {
+        'login': 'user2',
+        'password': 'password2',
+        'phone': '+2345678901',
+        'email': 'user2@example.com',
+        'age': 30,
+        'profession': 'Teacher',
+        'married': 'Yes',
+        'info_show': False,
+        'reset_code': 'abcd1234',
+        'coins': 200,
+        'avatar': 'user2.jpg',
+        'status': 'inactive',
+        'token': 'xyz789',
+        'preferences': 'Sports',
+        'favourites': 'Music',
+        'anchors': 'Beaches',
+        'rewards': 'Coupons',
+        'recommendations': 'Movies'
+    }
+]
 
-# # Loop through the user_data list and insert each dictionary as a new User object
-# for data in user_data:
-#     user = User(**data)
-#     session.add(user)
+# Loop through the user_data list and insert each dictionary as a new User object
+for data in user_data:
+    user = User(**data)
+    session.add(user)
 
-# Commit the changes to the database
-#session.commit()
+Commit the changes to the database
+session.commit()
 
 
 

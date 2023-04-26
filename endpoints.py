@@ -1,14 +1,17 @@
 import json
 from typing import List
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends,File, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import Select, create_engine, MetaData, func
+from sqlalchemy import Select, create_engine, MetaData, text
 from sqlalchemy.orm import sessionmaker
+import uvicorn
 from schemas import User,Place, Review
 from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace,CreateReview
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
+from boto3 import session
+from datetime import datetime
 #uvicorn endpoints:app --reload
 
 app = FastAPI()
@@ -20,9 +23,21 @@ app.add_middleware(
     allow_headers=["*"], # здесь можно указать список разрешенных заголовков
 )
 
-# @app.get("/")
-# async def root():
-#     return{"Hello":"Max"}
+
+ACCESS_ID = 'DO00TEVUBHKB6D7XRJXY'
+SECRET_KEY = 'iGVqWV85WDk+7RU9svSJOHrFQ4VGsrnYAXp3ILKeDaU'
+
+# Initiate session
+session = session.Session()
+s3 = session.client('s3',
+                        region_name='fra1',
+                        endpoint_url='https://reversers-images.fra1.digitaloceanspaces.com',
+                        aws_access_key_id=ACCESS_ID,
+                        aws_secret_access_key=SECRET_KEY)
+
+
+
+
 # Dependency to get the database session
 def get_db():
     db_url = "mysql://doadmin:AVNS_ixs6LYwnPYYNRCz3SRl@db-reversers-do-user-13881334-0.b.db.ondigitalocean.com:25060/defaultdb?"
@@ -34,6 +49,52 @@ def get_db():
     finally:
         db.close()
 # Endpoint to get all users
+
+@app.post("/uploadfile/{place_id}")
+async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+
+    # Save the image to DigitalOcean Spaces
+    bucket_name = 'reversers-images'
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
+    object_key = f"images/{filename}"
+    s3.upload_file(file.file, bucket_name, object_key)
+
+    # Update the existing record in the database with the new image URL
+    query = text(f"UPDATE places SET image='https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}' WHERE id={place_id}")
+    db.execute(query)
+    db.commit()
+
+    return {"filename": file.filename}
+
+
+@app.get("/getimage/{place_id}")
+async def get_image(place_id: int, db: Session = Depends(get_db)):
+    query = text(f"SELECT image FROM places WHERE id = {place_id}")
+    result = db.execute(query).fetchone()
+    if result:
+        return result
+    else:
+        return None
+
+
+# @app.get("/users/raw/sql/{user_id}")
+# def get_raw_users(user_id:int, db: Session = Depends(get_db)):
+#     query = text(f"select * from users where user_id = {user_id}")
+#     result = db.execute(query).fetchone()
+#     print(result)
+#     return {"data": result}
+
+@app.get("/users/raw/sql/{user_id}")
+def get_raw_users(user_id:int, db: Session = Depends(get_db)):
+    query = text(f"select user_id, login, phone from users where user_id = {user_id}")
+    
+    result = db.execute(query).fetchmany()
+    
+    if result is not None:
+        print(result)
+        return {"data": result}
+    else:
+        return {"data": None}
 
 #Get all users
 @app.get("/users", response_model=List[UsersRead])
@@ -189,3 +250,6 @@ async def get_all_tags(db: Session = Depends(get_db)):
 #     with Session(get_db) as session:
 #         places = session.query(Place.place_id, Place.tags).all()
 #         return places
+
+if __name__ == "__main__":
+    uvicorn.run(app,host='0.0.0.0', port = 8000)
