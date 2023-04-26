@@ -60,14 +60,14 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     file = BytesIO(file_contents)
     filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
     object_key = f"images/{filename}"
-    s3.upload_file(file.file, bucket_name, object_key)
+    s3.upload_file(file, bucket_name, object_key)
 
     # Update the existing record in the database with the new image URL
     query = text(f"UPDATE places SET image='https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}' WHERE id={place_id}")
     db.execute(query)
     db.commit()
 
-    return {"filename": file.filename}
+    return {"filename": filename}
 
 
 @app.get("/getimage/{place_id}")
