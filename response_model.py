@@ -70,7 +70,7 @@ class PlacesRead(BaseModel):
     start_work_time: Optional[str]
     end_work_time: Optional[str]
     tags: Dict[str, Optional[str]] = None
-    images: Optional[List[str]] = None
+    images: Optional[str] = None
     marks: Dict[str, Optional[str]] = None
     class Config:
         orm_mode = True
