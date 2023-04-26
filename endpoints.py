@@ -56,11 +56,17 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
     # Save the image to DigitalOcean Spaces
     bucket_name = 'reversers-images'
+    print("got bucket name")
     file_contents = await file.read()
+    print("received file_contents")
     file = BytesIO(file_contents)
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}-{file.filename}"
+    print("decoded file")
+    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    print("set filename")
     object_key = f"images/{filename}"
+    print("set object key")
     s3.upload_file(file, bucket_name, object_key)
+    print("file uploaded")
 
     # Update the existing record in the database with the new image URL
     query = text(f"UPDATE places SET image='https://{bucket_name}.fra1.digitaloceanspaces.com/{object_key}' WHERE id={place_id}")
