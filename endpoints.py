@@ -191,6 +191,7 @@ async def upload_image(review_id: int, file: UploadFile = File(...), db: Session
     print("query added")
 
 
+
 @app.get("/review/getimage/{review_id}")
 def get_image(review_id:int, db:Session = Depends(get_db)):
     place = db.query(Review).filter(Review.review_id == review_id).first() 
