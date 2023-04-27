@@ -185,7 +185,7 @@ async def upload_image(review_id: int, file: UploadFile = File(...), db: Session
     
     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
     print(url)
-    stmt = (update(Review).where(Review.review_id==review_id).values(images = url))
+    stmt = (update(Review).where(Review.review_id==review_id).values(image = url))
     db.execute(stmt)
     db.commit()
     print("query added")
