@@ -57,7 +57,8 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     # Save the image to DigitalOcean Spaces
     file_contents = await file.read()
     file = BytesIO(file_contents)
-    filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    filename = place_id
 
     print(filename)
     object_key = f"base/{filename}"
@@ -74,11 +75,15 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     db.commit()
     print("query added")
 
+
+
+
 #
 @app.get("/getimage/{place_id}")
 def get_image(place_id:int, db:Session = Depends(get_db)):
     place = db.query(Place).filter(Place.place_id == place_id).first() 
     url = place.images
+
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
     url_access = s3.generate_presigned_url(ClientMethod='get_object',
