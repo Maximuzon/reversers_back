@@ -1,7 +1,7 @@
 from io import BytesIO
 import re
 from typing import List
-from fastapi import FastAPI, Depends,File, UploadFile
+from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import Select, create_engine, MetaData, text, insert,update
@@ -126,6 +126,18 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
+#Check for users existence
+@app.post("/users/check")
+async def check_user(email: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(email=email, password=password).first()
+
+    # If the user is not found, raise an HTTP exception
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Return a response indicating whether the user exists or not
+    return {"message": "User exists" if user else "User does not exist"}
+
 
 #Get all places
 @app.get("/places", response_model=List[PlacesRead])
@@ -206,7 +218,8 @@ def get_image(review_id:int, db:Session = Depends(get_db)):
                                 ExpiresIn=3600)
     return url_access
 
-
+# receive place_id, return dict["review_id":image]
+@app.get
 
 #GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @app.get("/tags")
