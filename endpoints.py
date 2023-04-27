@@ -132,7 +132,7 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
     email = data.get("email")
     password = data.get("password")
     user = db.query(User).filter_by(email=email, password=password).first()
-
+    print(user)
     if user:
         return {"message": "User exists"}
     else:
