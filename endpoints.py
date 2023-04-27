@@ -1,4 +1,5 @@
 from io import BytesIO
+import json
 import re
 from typing import List
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
@@ -126,15 +127,14 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-#Check for users existence
 @app.post("/users/check")
-async def check_user(email: str, password: str, db: Session = Depends(get_db)):
+async def check_user(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    contents = await file.read()
+    data = json.loads(contents)
+    email = data.get("email_or_phone")
+    password = data.get("password")
     user = db.query(User).filter_by(email=email, password=password).first()
 
-    # If the user is not found, raise an HTTP exception
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
     # Return a response indicating whether the user exists or not
     return {"message": "User exists" if user else "User does not exist"}
 
