@@ -165,14 +165,14 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
     db.refresh(db_review)
     return db_review
 
-@app.post("/review/imageupload/{place_id}")
-async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+@app.post("/review/imageupload/{review_id}")
+async def upload_image(review_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
     # Save the image to DigitalOcean Spaces
     file_contents = await file.read()
     file = BytesIO(file_contents)
     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-    filename = place_id
+    filename = review_id
     bucket_name = 'reversers-images'
     print(filename)
     object_key = f"base/{filename}"
@@ -185,7 +185,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     
     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
     print(url)
-    stmt = (update(Review).where(Review.place_id==place_id).values(images = url))
+    stmt = (update(Review).where(Review.review_id==review_id).values(images = url))
     db.execute(stmt)
     db.commit()
     print("query added")
