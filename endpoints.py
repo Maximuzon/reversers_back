@@ -16,6 +16,11 @@ from boto3 import session
 from datetime import datetime
 #uvicorn endpoints:app --reload
 
+
+#личная страница добавить эндпоинты для аватарки. загрузка в базу(апдэйт всего юзера ), вернуть изображение на фронт. 
+#эндпоинты по возвращению нескольких изображений в виде словаря. Изменить поле images в Place_id
+#эндпоинты. по нажатию на сердечко, добавить пользователю в favourites атрибту place_id.  в таблице place этому же place_id прибавить +1 в likes.
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
