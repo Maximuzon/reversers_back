@@ -1,5 +1,5 @@
 from io import BytesIO
-import json
+import re
 from typing import List
 from fastapi import FastAPI, Depends,File, UploadFile
 from fastapi.responses import JSONResponse
@@ -36,7 +36,7 @@ s3 = session.client('s3',
                         aws_access_key_id=ACCESS_ID,
                         aws_secret_access_key=SECRET_KEY)
 
-
+bucket_name = 'reversers-images'
 
 
 # Dependency to get the database session
@@ -55,7 +55,6 @@ def get_db():
 async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
     # Save the image to DigitalOcean Spaces
-    bucket_name = 'reversers-images'
     file_contents = await file.read()
     file = BytesIO(file_contents)
     filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
@@ -78,8 +77,20 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
 @app.get("/getimage/{place_id}")
 def get_image(place_id:int, db:Session = Depends(get_db)):
-    place = db.query(Place).filter(Place.place_id == place_id).first()
-    return {"url": place.images}
+    place = db.query(Place).filter(Place.place_id == place_id).first() 
+    url = place.images
+    pattern = r'(?<=com\/).*'
+    match = re.search(pattern, url)
+    match.group(0)
+    url_access = s3.generate_presigned_url(ClientMethod='get_object',
+                                Params={'Bucket': bucket_name,
+                                        'Key': match.group(0)},
+                                ExpiresIn=3600)
+    return url_access
+
+
+
+
 
 
 @app.get("/places/new/hz/cho/{place_id}")
