@@ -59,7 +59,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     file = BytesIO(file_contents)
     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     filename = place_id
-
+    bucket_name = 'reversers-images'
     print(filename)
     object_key = f"base/{filename}"
     print("set object key")
@@ -83,7 +83,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 def get_image(place_id:int, db:Session = Depends(get_db)):
     place = db.query(Place).filter(Place.place_id == place_id).first() 
     url = place.images
-
+    bucket_name = 'reversers-images'
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
     url_access = s3.generate_presigned_url(ClientMethod='get_object',
