@@ -87,6 +87,7 @@ def get_image(place_id:int, db:Session = Depends(get_db)):
     bucket_name = 'reversers-images'
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
+    print(match)
     url_access = s3.generate_presigned_url(ClientMethod='get_object',
                                 Params={'Bucket': bucket_name,
                                         'Key': match.group(0)},
@@ -153,7 +154,7 @@ def read_review(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 #Get specific REVIEW based on id
 @app.get("/review/{place_id}", response_model=ReviewRead)
 def read_places(place_id: int, db: Session = Depends(get_db)):
-    return db.query(Review).filter(Place.place_id == place_id ).first()
+    return db.query(Review).filter(Review.place_id == place_id ).first()
 
 #add new REVIEW
 @app.post("/reviews")
