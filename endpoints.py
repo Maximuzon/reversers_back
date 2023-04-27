@@ -71,7 +71,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     
     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
     print(url)
-    stmt = (update(Place).where(Place.place_id==place_id).values(images = url))
+    stmt = (update(Place).where(Place.place_id==place_id).values(image = url))
     db.execute(stmt)
     db.commit()
     print("query added")
@@ -194,7 +194,7 @@ async def upload_image(review_id: int, file: UploadFile = File(...), db: Session
 @app.get("/review/getimage/{review_id}")
 def get_image(review_id:int, db:Session = Depends(get_db)):
     place = db.query(Review).filter(Review.review_id == review_id).first() 
-    url = place.images
+    url = place.image
     bucket_name = 'reversers-images'
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
