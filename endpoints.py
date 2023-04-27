@@ -128,10 +128,8 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
     return db_user
 
 @app.post("/users/check")
-async def check_user(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    contents = await file.read()
-    data = json.loads(contents)
-    email = data.get("email_or_phone")
+async def check_user(data: dict, db: Session = Depends(get_db)):
+    email = data.get("email")
     password = data.get("password")
     user = db.query(User).filter_by(email=email, password=password).first()
 
