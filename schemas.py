@@ -62,7 +62,7 @@ class Review(Base):
     date = Column(DateTime(timezone=False), nullable=False)
     text = Column(String(255), nullable=False)
     mark = Column(Integer, nullable=False)
-    image = Column(String(255), nullable=True)
+    image = Column(String(1000), nullable=True)
 
     place = relationship("Place", backref="reviews")
     user = relationship("User", backref="reviews")
