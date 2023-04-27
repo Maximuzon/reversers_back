@@ -152,7 +152,7 @@ def read_review(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return db.query(Review).offset(skip).limit(limit).all()
 
 #Get specific REVIEW based on id
-@app.get("/review/{place_id}", response_model=ReviewRead)
+@app.get("/review/{place_id}", response_model=List[ReviewRead])
 def read_places(place_id: int, db: Session = Depends(get_db)):
     return db.query(Review).filter(Review.place_id == place_id ).all()
 
