@@ -74,14 +74,13 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     db.commit()
     print("query added")
 
-
+#
 @app.get("/getimage/{place_id}")
 def get_image(place_id:int, db:Session = Depends(get_db)):
     place = db.query(Place).filter(Place.place_id == place_id).first() 
     url = place.images
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
-    match.group(0)
     url_access = s3.generate_presigned_url(ClientMethod='get_object',
                                 Params={'Bucket': bucket_name,
                                         'Key': match.group(0)},
@@ -89,38 +88,6 @@ def get_image(place_id:int, db:Session = Depends(get_db)):
     return url_access
 
 
-
-
-
-
-@app.get("/places/new/hz/cho/{place_id}")
-def return_place_new(place_id: int,db: Session = Depends(get_db)):
-    place = db.query(Place).filter_by(place_id=place_id).first()
-    return place
-
-@app.post("/places/new/hz/cho/{place_id}/{insert_text}")
-def return_place_new(place_id: int,insert_text:str,db: Session = Depends(get_db)):
-    stmt = (update(Place).where(Place.place_id==place_id).values(short_description = insert_text))  
-    db.execute(stmt)
-    db.commit()
-
-
-@app.get("/getimage/{place_id}")
-async def get_image(place_id: int, db: Session = Depends(get_db)):
-    query = text(f"SELECT image FROM places WHERE id = {place_id}")
-    result = db.execute(query).fetchone()
-    if result:
-        return result
-    else:
-        return None
-
-
-# @app.get("/users/raw/sql/{user_id}")
-# def get_raw_users(user_id:int, db: Session = Depends(get_db)):
-#     query = text(f"select * from users where user_id = {user_id}")
-#     result = db.execute(query).fetchone()
-#     print(result)
-#     return {"data": result}
 
 @app.get("/users/raw/sql/{user_id}")
 def get_raw_users(user_id:int, db: Session = Depends(get_db)):
@@ -191,40 +158,6 @@ def create_review(place: CreateReview, db: Session = Depends(get_db)):
     db.refresh(db_review)
     return db_review
 
-
-# #RETRIEVE ALL TAGS
-# @app.get("/tags")
-# async def get_all_tags(db: Session = Depends(get_db)):
-#     tags = {}
-#     try:
-#         # retrieve all rows from the places table
-#         query = Select(Place.tags)
-#         result = db.execute(query)
-#         # extract tags from each row and add to the tags dictionary
-#         for row in result:
-#             row_tags = row[0]
-#             for key, value in row_tags.items():
-#                 tags.setdefault(key, []).append(value)
-#         return {"tags": tags}
-#     finally:
-#         db.close()       
-
-#Get user_id
-
-
-
-
-
-#Get all places
-# @app.get("/tags/new")
-# def get_all_tags(db: Session = Depends(get_db)):
-#     tags = {}
-#     places = db.query(Place).all()
-#     for place in places:
-#         tags.update(place.tags)
-#     return tags.items()
-
-
 #GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @app.get("/tags")
 async def get_all_tags(db: Session = Depends(get_db)):
@@ -244,49 +177,6 @@ async def get_all_tags(db: Session = Depends(get_db)):
         return {"tags": tags}
     finally:
         db.close()
-
-#return user
-
-
-# #Get all REVIEWS
-# @app.get("/reviews", response_model=List[Revi])
-# def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-#     return db.query(Place).offset(skip).limit(limit).all()
-
-
-# @app.get("/places/column/{column_name}", response_model=List[str])
-# def get_unique_values(column_name: str, db: Session = Depends(get_db)):
-#     query = db.query(getattr(schemas.Place, column_name)).distinct().all()
-#     unique_values = [value[0] for value in query if value[0] is not None]
-#     return unique_values
-#
-# @app.get("/places/column/{column_name}")
-# def get_unique_values(column_name: str, db: Session = Depends(get_db)):
-#     column = getattr(schemas.Place, column_name)  # Get the column object from the model class
-#     query = db.query(func.jsonb_array_elements(column).cast(str).distinct())  # Use func to get unique values from the JSON column
-#     results = [row[0] for row in query.all()]  # Extract the results from the query response
-#     return results
-
-
-# @app.get("/places/tags", response_model=list[GetAllPlaces]) 
-# def read_places(db: Session = Depends(get_db)):
-#     return db.query(Place).all()
-
-# @app.get("/places/tags/{place_id}", response_model=Placestags)
-# def read_places(place_id: int, db: Session = Depends(get_db)):
-#     return db.query(Place.tags).filter(Place.place_id == place_id )
-#______-----------
-# @app.get("/places/tags/{place_id}", response_model=Placestags)
-# def read_places(place_id: int, db: Session = Depends(get_db)):
-#     place = db.query(Place).filter(Place.place_id == place_id).first()
-#     tags = Place.tags  # Assuming Place object has a `tags` field
-#     return {"place_id": place.place_id,"tags": tags}
-
-# @app.get("/places/tags")
-# def get_places():
-#     with Session(get_db) as session:
-#         places = session.query(Place.place_id, Place.tags).all()
-#         return places
 
 if __name__ == "__main__":
     uvicorn.run(app,host='0.0.0.0', port = 8000)
