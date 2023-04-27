@@ -134,7 +134,7 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
     user = db.query(User).filter_by(email=email, password=password).first()
     print(user)
     if user:
-        return {"message": "User exists"}
+        return {"user_id": user.user_id}
     else:
         return {"message": "User does not exist"}
 
