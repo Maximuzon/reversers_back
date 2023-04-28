@@ -21,11 +21,11 @@ class User(Base):
     info_show = Column(Boolean, nullable=False)
     reset_code = Column(String(255), nullable=True)
     coins = Column(Integer, nullable=False, default=0)
-    avatar = Column(String(255), nullable=True) # ссылки на файловое хранилище 
+    avatar = Column(JSON, nullable=True) # ссылки на файловое хранилище 
     status = Column(String(255), nullable=False, default="client")
     token = Column(String(255), nullable=True, unique=True)
     preferences = Column(JSON, nullable=True)#У Леши называется placeTags
-    favourites = Column(String(255), nullable=True)
+    favourites = Column(JSON, nullable=True)
     anchors = Column(String(255), nullable=True)#json
     rewards = Column(String(255), nullable=True)#json 
     recommendations = Column(String(255), nullable=True)
@@ -48,7 +48,7 @@ class Place(Base):
     start_work_time = Column(String(255), nullable=True)
     end_work_time = Column(String(255), nullable=True)
     tags = Column(JSON, nullable=True)
-    images = Column(String(1000), nullable=True)
+    images = Column(JSON, nullable=True)
     marks = Column(JSON, nullable=True)
 
 

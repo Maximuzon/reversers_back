@@ -15,11 +15,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from boto3 import session
 from datetime import datetime
 #uvicorn endpoints:app --reload
-
+#c:/Users/Max/virtualENV/Scripts/Activate.ps1
 
 #личная страница добавить эндпоинты для аватарки. загрузка в базу(апдэйт всего юзера ), вернуть изображение на фронт. 
-#эндпоинты по возвращению нескольких изображений в виде словаря. Изменить поле images в Place_id
-#эндпоинты. по нажатию на сердечко, добавить пользователю в favourites атрибту place_id.  в таблице place этому же place_id прибавить +1 в likes.
+#эндпоинты по возвращению нескольких изображений в виде словаря. Изменить поле images в Place_id done
+#эндпоинты. по нажатию на сердечко, добавить пользователю в favourites атрибту place_id.  в таблице place этому же place_id прибавить +1 в likes. done
 
 app = FastAPI()
 app.add_middleware(
@@ -57,27 +57,49 @@ def get_db():
         db.close()
 # Endpoint to get all users
 
-@app.post("/uploadfile/{place_id}")
-async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+# @app.post("/uploadfile/{place_id}")
+# async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
-    # Save the image to DigitalOcean Spaces
-    file_contents = await file.read()
-    file = BytesIO(file_contents)
-    #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-    filename = place_id
-    bucket_name = 'reversers-images'
-    print(filename)
-    object_key = f"base/{filename}"
-    print("set object key")
-    print(object_key)
-    print(bucket_name)
-    s3.upload_fileobj(file, bucket_name, object_key)
-    print("file uploaded")
-    # Update the existing record in the database with the new image URL
+#     # Save the image to DigitalOcean Spaces
+#     file_contents = await file.read()
+#     file = BytesIO(file_contents)
+#     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+#     filename = place_id
+#     bucket_name = 'reversers-images'
+#     print(filename)
+#     object_key = f"base/{filename}"
+#     print("set object key")
+#     print(object_key)
+#     print(bucket_name)
+#     s3.upload_fileobj(file, bucket_name, object_key)
+#     print("file uploaded")
+#     # Update the existing record in the database with the new image URL
     
-    url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
-    print(url)
-    stmt = (update(Place).where(Place.place_id==place_id).values(image = url))
+#     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+#     print(url)
+#     stmt = (update(Place).where(Place.place_id==place_id).values(image = url))
+#     db.execute(stmt)
+#     db.commit()
+#     print("query added")
+
+@app.post("/uploadfile/{place_id}")
+async def upload_images(place_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db)):
+
+    # Save the images to DigitalOcean Spaces
+    urls = []
+    for file in files:
+        file_contents = await file.read()
+        file = BytesIO(file_contents)
+        #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+        filename = place_id
+        bucket_name = 'reversers-images'
+        object_key = f"base/{filename}"
+        s3.upload_fileobj(file, bucket_name, object_key)
+        url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+        urls.append(url)
+
+    # Update the existing record in the database with the new image URLs
+    stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
     db.execute(stmt)
     db.commit()
     print("query added")
@@ -86,32 +108,42 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
 
 #
+# @app.get("/getimage/{place_id}")
+# def get_image(place_id:int, db:Session = Depends(get_db)):
+#     place = db.query(Place).filter(Place.place_id == place_id).first() 
+#     url = place.images
+#     bucket_name = 'reversers-images'
+#     pattern = r'(?<=com\/).*'
+#     match = re.search(pattern, url)
+#     print(match)
+#     url_access = s3.generate_presigned_url(ClientMethod='get_object',
+#                                 Params={'Bucket': bucket_name,
+#                                         'Key': match.group(0)},
+#                                 ExpiresIn=3600)
+#     return url_access
+
 @app.get("/getimage/{place_id}")
 def get_image(place_id:int, db:Session = Depends(get_db)):
     place = db.query(Place).filter(Place.place_id == place_id).first() 
-    url = place.images
+    urls = place.images
+    if urls is None:
+        return []
+    if isinstance(urls, str):
+        urls = [urls]
     bucket_name = 'reversers-images'
+    urls_access = []
     pattern = r'(?<=com\/).*'
-    match = re.search(pattern, url)
-    print(match)
-    url_access = s3.generate_presigned_url(ClientMethod='get_object',
+    for url in urls:
+        match = re.search(pattern, url)
+        url_access = s3.generate_presigned_url(ClientMethod='get_object',
                                 Params={'Bucket': bucket_name,
                                         'Key': match.group(0)},
                                 ExpiresIn=3600)
-    return url_access
+        urls_access.append(url_access)
+    return urls_access
 
 
 
-@app.get("/users/raw/sql/{user_id}")
-def get_raw_users(user_id:int, db: Session = Depends(get_db)):
-    query = text(f"select user_id, login, phone from users where user_id = {user_id}")
-    result = db.execute(query).fetchone()
-    
-    if result is not None:
-        print(result)
-        return {"data": result}
-    else:
-        return {"data": None}
 
 #Get all users
 @app.get("/users", response_model=List[UsersRead])
@@ -132,6 +164,7 @@ def create_user(user: CreateUser, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
+#check the user
 @app.post("/users/check")
 async def check_user(data: dict, db: Session = Depends(get_db)):
     email = data.get("email")
@@ -142,7 +175,59 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
         return {"user_id": user.user_id}
     else:
         return {"message": "User does not exist"}
+    
+#add to the favourites
+@app.put("/user/addfavorite/{user_id}/{place_id}")
+def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user.favourites:
+        if place_id not in user.favorites:
+            user.favourites.append(place_id)
+    else:
+        user.favourites = [place_id]
 
+    place = db.query(Place).filter(Place.place_id == place_id).first()
+    place.likes += 1
+    db.commit()
+    return {"message": f"Added {place_id} to favorites of user {user_id}, increased the like count of place"}
+
+#update the user
+@app.put("/user/{user_id}")
+def update_user(user_id: int, data: dict, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    for key, value in data.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
+    db.commit()
+    return {"message": f"User {user_id} updated successfully"}
+
+#upload image for the user
+@app.post("/uploadavatar/{user_id}")
+async def upload_image(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+
+    # Save the image to DigitalOcean Spaces
+    file_contents = await file.read()
+    file = BytesIO(file_contents)
+    #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    filename = user_id
+    bucket_name = 'reversers-images'
+    print(filename)
+    object_key = f"base/{filename}"
+    print("set object key")
+    print(object_key)
+    print(bucket_name)
+    s3.upload_fileobj(file, bucket_name, object_key)
+    print("file uploaded")
+    # Update the existing record in the database with the new image URL
+    
+    url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+    print(url)
+    stmt = (update(User).where(User.user_id==user_id).values(image = url))
+    db.execute(stmt)
+    db.commit()
+    print("query added")
 
 #Get all places
 @app.get("/places", response_model=List[PlacesRead])
