@@ -308,6 +308,30 @@ def get_image(review_id:int, db:Session = Depends(get_db)):
                                 ExpiresIn=3600)
     return url_access
 
+
+@app.get("/review/images/getall/{place_id}")
+def get_images(place_id:int,db:Session = Depends(get_db)):
+    reviews = db.query(Review).filter(Review.place_id==place_id).all()
+    
+    url_dict = {}
+    bucket_name = 'reversers-images'
+    pattern = r'(?<=com\/).*'
+
+    for review in reviews:
+        url = review.image
+        match = re.search(pattern, url)
+        print(match)
+        if match:
+            url_access = s3.generate_presigned_url(ClientMethod='get_object',
+                                    Params={'Bucket': bucket_name,
+                                            'Key': match.group(0)},
+                                    ExpiresIn=3600)
+            url_dict[review.review_id] = str(url_access)
+        else:
+            url_dict[review.review_id] = None
+
+    return url_dict
+
 # receive place_id, return dict["review_id":image]
 @app.get
 
