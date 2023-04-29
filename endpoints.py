@@ -3,9 +3,10 @@ import json
 import re
 from typing import List, Dict
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import Select, create_engine, MetaData, text, insert,update
+from sqlalchemy import Select, create_engine, MetaData, func, text, insert,update
 from sqlalchemy.orm import sessionmaker
 import uvicorn
 from schemas import User,Place, Review
@@ -149,6 +150,29 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
     else:
         return {"message": "User does not exist"}
     
+#return amount of reviews of the user
+@app.get("/user/reviews/{user_id}")
+def get_reviews(user_id:int, db: Session = Depends(get_db)):
+     reviews = db.query(Review).filter(Review.user_id == user_id).all()
+     reviews_count = db.query(func.count(Review.review_id)).filter(Review.user_id == user_id).scalar()
+     review_list = []
+     for review in reviews:
+         review_dict = {
+             "review_id": review.review_id,
+             "place_id": review.place_id,
+             "user_id": review.user_id,
+             "date": review.date,
+             "text": review.text,
+             "mark": review.mark
+         }
+         review_list.append(review_dict)
+     return review_list, {"reviews_count":reviews_count}
+
+@app.get("/user/reviews/count/{user_id}")
+def get_reviews(user_id:int, db: Session = Depends(get_db)):
+    reviews_count = db.query(func.count(Review.review_id)).filter(Review.user_id == user_id).scalar()
+    return reviews_count
+
 #add to the favourites
 @app.put("/user/addfavorite/{user_id}/{place_id}")
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
