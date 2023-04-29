@@ -109,13 +109,13 @@ async def upload_images(place_id: int, file: List[Dict[int, bytes]] = File(...),
 
     # Save the images to DigitalOcean Spaces
     urls = []
-    for file in file:
-        file_contents = file['file']
-        file = BytesIO(file_contents)
+    for file_image in file:
+        file_contents = file_image['file']
+        file_bytes = BytesIO(file_contents)
         filename = place_id
         bucket_name = 'reversers-images'
         object_key = f"base/{filename}"
-        s3.upload_fileobj(file, bucket_name, object_key)
+        s3.upload_fileobj(file_bytes, bucket_name, object_key)
         url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
         urls.append(url)
 
@@ -124,7 +124,6 @@ async def upload_images(place_id: int, file: List[Dict[int, bytes]] = File(...),
     db.execute(stmt)
     db.commit()
     print("query added")
-
 
 
 
