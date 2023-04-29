@@ -202,7 +202,7 @@ def update_user(user_id: int, data: dict, db: Session = Depends(get_db)):
     return {"message": f"User {user_id} updated successfully"}
 
 #upload image for the user
-@app.post("/uploadavatar/{user_id}")
+@app.put("/uploadavatar/{user_id}")
 async def upload_image(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
     # Save the image to DigitalOcean Spaces
