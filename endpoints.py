@@ -222,7 +222,7 @@ async def upload_image(user_id: int, file: UploadFile = File(...), db: Session =
     
     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
     print(url)
-    stmt = (update(User).where(User.user_id==user_id).values(image = url))
+    stmt = (update(User).where(User.user_id==user_id).values(avatar = url))
     db.execute(stmt)
     db.commit()
     print("query added")
@@ -230,7 +230,7 @@ async def upload_image(user_id: int, file: UploadFile = File(...), db: Session =
 @app.get("/user/avatar/{user_id}")
 def get_image(user_id:int, db:Session = Depends(get_db)):
     place = db.query(User).filter(User.user_id == user_id).first() 
-    url = place.image
+    url = place.avatar
     bucket_name = 'reversers-images'
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
