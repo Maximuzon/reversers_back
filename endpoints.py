@@ -183,11 +183,12 @@ def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     if user.favourites:
         if place_id not in user.favourites:
             user.favourites.append(place_id)
+            place = db.query(Place).filter(Place.place_id == place_id).first()
+            place.likes += 1
     else:
         user.favourites = [place_id]
 
-    place = db.query(Place).filter(Place.place_id == place_id).first()
-    place.likes += 1
+
     db.commit()
     return {"message": f"Added {place_id} to favorites of user {user_id}, increased the like count of place"}
 
