@@ -82,36 +82,15 @@ def get_db():
 #     db.commit()
 #     print("query added")
 
-@app.post("/uploadfile/{place_id}")
-async def upload_images(place_id: int, file: List[UploadFile] = File(...), db: Session = Depends(get_db)):
-
-    # Save the images to DigitalOcean Spaces
-    urls = []
-    for file in file:
-        file_contents = await file.read()
-        file = BytesIO(file_contents)
-        #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-        filename = place_id
-        bucket_name = 'reversers-images'
-        object_key = f"base/{filename}"
-        s3.upload_fileobj(file, bucket_name, object_key)
-        url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
-        urls.append(url)
-
-    # Update the existing record in the database with the new image URLs
-    stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
-    db.execute(stmt)
-    db.commit()
-    print("query added")
-
 # @app.post("/uploadfile/{place_id}")
-# async def upload_images(place_id: int, file: List[Dict[int, bytes]] = File(...), db: Session = Depends(get_db)):
+# async def upload_images(place_id: int, file: List[UploadFile] = File(...), db: Session = Depends(get_db)):
 
 #     # Save the images to DigitalOcean Spaces
 #     urls = []
-#     for file in file_data:
-#         file_contents = file['file']
+#     for file in file:
+#         file_contents = await file.read()
 #         file = BytesIO(file_contents)
+#         #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 #         filename = place_id
 #         bucket_name = 'reversers-images'
 #         object_key = f"base/{filename}"
@@ -124,6 +103,27 @@ async def upload_images(place_id: int, file: List[UploadFile] = File(...), db: S
 #     db.execute(stmt)
 #     db.commit()
 #     print("query added")
+
+@app.post("/uploadfile/{place_id}")
+async def upload_images(place_id: int, file: List[Dict[int, bytes]] = File(...), db: Session = Depends(get_db)):
+
+    # Save the images to DigitalOcean Spaces
+    urls = []
+    for file in file:
+        file_contents = file['file']
+        file = BytesIO(file_contents)
+        filename = place_id
+        bucket_name = 'reversers-images'
+        object_key = f"base/{filename}"
+        s3.upload_fileobj(file, bucket_name, object_key)
+        url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+        urls.append(url)
+
+    # Update the existing record in the database with the new image URLs
+    stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
+    db.execute(stmt)
+    db.commit()
+    print("query added")
 
 
 
