@@ -105,7 +105,7 @@ def get_db():
 #     print("query added")
 
 @app.post("/uploadfile/{place_id}")
-async def upload_images(place_id: int,  files: List[UploadFile], db: Session = Depends(get_db)):
+async def upload_images(place_id: int,  files: UploadFile, db: Session = Depends(get_db)):
     return {"filenames": [file.filename for file in files]}
     # # Save the images to DigitalOcean Spaces
     # urls = []
