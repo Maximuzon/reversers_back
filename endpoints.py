@@ -104,6 +104,8 @@ def get_images(place_id: int, db: Session = Depends(get_db)):
     if not place:
         raise HTTPException(status_code=404, detail="Place not found")
     images_json = place.images
+    if not images_json:
+        return "Place does not have an image"
     images_list = json.loads(images_json)
     pre_signed_urls = []
     for url in images_list:
@@ -115,7 +117,6 @@ def get_images(place_id: int, db: Session = Depends(get_db)):
                                 ExpiresIn=3600)
         pre_signed_urls.append(url_access)
     return pre_signed_urls
-
 
 
 
