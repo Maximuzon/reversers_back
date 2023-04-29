@@ -227,6 +227,20 @@ async def upload_image(user_id: int, file: UploadFile = File(...), db: Session =
     db.commit()
     print("query added")
 
+@app.get("/user/avatar/{user_id}")
+def get_image(user_id:int, db:Session = Depends(get_db)):
+    place = db.query(User).filter(User.user_id == user_id).first() 
+    url = place.image
+    bucket_name = 'reversers-images'
+    pattern = r'(?<=com\/).*'
+    match = re.search(pattern, url)
+    print(match)
+    url_access = s3.generate_presigned_url(ClientMethod='get_object',
+                                Params={'Bucket': bucket_name,
+                                        'Key': match.group(0)},
+                                ExpiresIn=3600)
+    return url_access
+
 #Get all places
 @app.get("/places", response_model=List[PlacesRead])
 def read_places(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
