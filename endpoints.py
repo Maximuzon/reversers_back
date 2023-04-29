@@ -87,7 +87,7 @@ async def upload_images(place_id: int, file: List[UploadFile] = File(...), db: S
 
     # Save the images to DigitalOcean Spaces
     urls = []
-    for file in files:
+    for file in file:
         file_contents = await file.read()
         file = BytesIO(file_contents)
         #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
