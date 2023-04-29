@@ -125,6 +125,10 @@ async def upload_images(place_id: int,  file : List[UploadFile] = File(...), db:
     db.commit()
     print("query added")
 
+@app.post("/files")
+def file_contents(files: List[UploadFile]):
+    return {"filenames": [file.filename for file in files]}
+
 
 
 #
