@@ -57,92 +57,44 @@ def get_db():
         db.close()
 # Endpoint to get all users
 
-# @app.post("/uploadfile/{place_id}")
-# async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+@app.put("/uploadfile/{place_id}")
+async def upload_image(place_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
 
-#     # Save the image to DigitalOcean Spaces
-#     file_contents = await file.read()
-#     file = BytesIO(file_contents)
-#     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-#     filename = place_id
-#     bucket_name = 'reversers-images'
-#     print(filename)
-#     object_key = f"base/{filename}"
-#     print("set object key")
-#     print(object_key)
-#     print(bucket_name)
-#     s3.upload_fileobj(file, bucket_name, object_key)
-#     print("file uploaded")
-#     # Update the existing record in the database with the new image URL
+    # Save the image to DigitalOcean Spaces
+    file_contents = await file.read()
+    file = BytesIO(file_contents)
+    #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+    filename = place_id
+    bucket_name = 'reversers-images'
+    print(filename)
+    object_key = f"base/{filename}"
+    print("set object key")
+    print(object_key)
+    print(bucket_name)
+    s3.upload_fileobj(file, bucket_name, object_key)
+    print("file uploaded")
+    # Update the existing record in the database with the new image URL
+
+    existing_place = db.query(Place).filter(Place.place_id == place_id).first()
+    if existing_place:
+        image_urls = json.loads(existing_place.images) if existing_place.images else []
+        image_urls.append("https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key))
+        new_images = json.dumps(image_urls)
+        stmt = update(Place).where(Place.place_id == place_id).values(images=new_images)
+        db.execute(stmt)
+        db.commit()
+        return {"message": "Image uploaded and database updated successfully"}
+    else:
+        return {"message": "Place not found"}
     
-#     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
-#     print(url)
-#     stmt = (update(Place).where(Place.place_id==place_id).values(image = url))
-#     db.execute(stmt)
-#     db.commit()
-#     print("query added")
-
-# @app.post("/uploadfile/{place_id}")
-# async def upload_images(place_id: int, file: List[UploadFile] = File(...), db: Session = Depends(get_db)):
-
-#     # Save the images to DigitalOcean Spaces
-#     urls = []
-#     for file in file:
-#         file_contents = await file.read()
-#         file = BytesIO(file_contents)
-#         #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
-#         filename = place_id
-#         bucket_name = 'reversers-images'
-#         object_key = f"base/{filename}"
-#         s3.upload_fileobj(file, bucket_name, object_key)
-#         url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
-#         urls.append(url)
-
-#     # Update the existing record in the database with the new image URLs
-#     stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
-#     db.execute(stmt)
-#     db.commit()
-#     print("query added")
-
-@app.post("/uploadfile/{place_id}")
-async def upload_images(place_id: int,  files: UploadFile, db: Session = Depends(get_db)):
-    return {"filenames": [file.filename for file in files]}
-    # # Save the images to DigitalOcean Spaces
-    # urls = []
-    # for file_image in file:
-    #     file_contents = file_image['file']
-    #     file_bytes = BytesIO(file_contents)
-    #     filename = place_id
-    #     bucket_name = 'reversers-images'
-    #     object_key = f"base/{filename}"
-    #     s3.upload_fileobj(file_bytes, bucket_name, object_key)
-    #     url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
-    #     urls.append(url)
-
-    # # Update the existing record in the database with the new image URLs
-    # stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
+    # url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+    # print(url)
+    # stmt = (update(Place).where(Place.place_id==place_id).values(images = url))
     # db.execute(stmt)
     # db.commit()
     # print("query added")
 
 
-
-
-
-#
-# @app.get("/getimage/{place_id}")
-# def get_image(place_id:int, db:Session = Depends(get_db)):
-#     place = db.query(Place).filter(Place.place_id == place_id).first() 
-#     url = place.images
-#     bucket_name = 'reversers-images'
-#     pattern = r'(?<=com\/).*'
-#     match = re.search(pattern, url)
-#     print(match)
-#     url_access = s3.generate_presigned_url(ClientMethod='get_object',
-#                                 Params={'Bucket': bucket_name,
-#                                         'Key': match.group(0)},
-#                                 ExpiresIn=3600)
-#     return url_access
 
 @app.get("/getimage/{place_id}")
 def get_image(place_id:int, db:Session = Depends(get_db)):
