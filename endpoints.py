@@ -154,7 +154,6 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
 @app.get("/user/reviews/{user_id}")
 def get_reviews(user_id:int, db: Session = Depends(get_db)):
      reviews = db.query(Review).filter(Review.user_id == user_id).all()
-     reviews_count = db.query(func.count(Review.review_id)).filter(Review.user_id == user_id).scalar()
      review_list = []
      for review in reviews:
          review_dict = {
@@ -166,7 +165,7 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
              "mark": review.mark
          }
          review_list.append(review_dict)
-     return review_list, {"reviews_count":reviews_count}
+     return review_list
 
 @app.get("/user/reviews/count/{user_id}")
 def get_reviews(user_id:int, db: Session = Depends(get_db)):
