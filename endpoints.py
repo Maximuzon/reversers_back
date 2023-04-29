@@ -96,25 +96,24 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
 
 
 
+
 @app.get("/getimage/{place_id}")
-def get_image(place_id:int, db:Session = Depends(get_db)):
+def get_images(place_id: int, db: Session = Depends(get_db)):
     place = db.query(Place).filter(Place.place_id == place_id).first() 
-    urls = place.images
-    if urls is None:
-        return []
-    if isinstance(urls, str):
-        urls = [urls]
-    bucket_name = 'reversers-images'
-    urls_access = []
-    pattern = r'(?<=com\/).*'
-    for url in urls:
+    if not place:
+        raise HTTPException(status_code=404, detail="Place not found")
+    images_json = place.images
+    images_list = json.loads(images_json)
+    pre_signed_urls = []
+    for url in images_list:
+        pattern = r'(?<=com\/).*'
         match = re.search(pattern, url)
         url_access = s3.generate_presigned_url(ClientMethod='get_object',
                                 Params={'Bucket': bucket_name,
                                         'Key': match.group(0)},
                                 ExpiresIn=3600)
-        urls_access.append(url_access)
-    return urls_access
+        pre_signed_urls.append(url_access)
+    return pre_signed_urls
 
 
 
