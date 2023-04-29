@@ -181,7 +181,7 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
     if user.favourites:
-        if place_id not in user.favorites:
+        if place_id not in user.favourites:
             user.favourites.append(place_id)
     else:
         user.favourites = [place_id]
