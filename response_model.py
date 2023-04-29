@@ -1,5 +1,5 @@
 import json
-from typing import List, Optional
+from typing import List, Optional,Any
 from typing import Dict
 from MySQLdb import Timestamp
 from pydantic import BaseModel, EmailStr, validator, Json
@@ -20,7 +20,7 @@ class UsersRead(BaseModel):
     status: str
     preferences: Dict[str, str] = None
     favourites: Optional[str] = None
-    anchors: Optional[str] = None #!!!!!!!!!!!!!!
+    anchors: Any = None #!!!!!!!!!!!!!!
     rewards: Optional[str] = None #!!!!!!!!!!!!!!
     recommendations: Optional[str] = None
 

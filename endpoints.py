@@ -1,7 +1,7 @@
 from io import BytesIO
 import json
 import re
-from typing import List
+from typing import List, Dict
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -82,15 +82,36 @@ def get_db():
 #     db.commit()
 #     print("query added")
 
+# @app.post("/uploadfile/{place_id}")
+# async def upload_images(place_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db)):
+
+#     # Save the images to DigitalOcean Spaces
+#     urls = []
+#     for file in files:
+#         file_contents = await file.read()
+#         file = BytesIO(file_contents)
+#         #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+#         filename = place_id
+#         bucket_name = 'reversers-images'
+#         object_key = f"base/{filename}"
+#         s3.upload_fileobj(file, bucket_name, object_key)
+#         url = "https://{0}.fra1.digitaloceanspaces.com/{1}".format(bucket_name, object_key)
+#         urls.append(url)
+
+#     # Update the existing record in the database with the new image URLs
+#     stmt = (update(Place).where(Place.place_id==place_id).values(images = urls))
+#     db.execute(stmt)
+#     db.commit()
+#     print("query added")
+
 @app.post("/uploadfile/{place_id}")
-async def upload_images(place_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db)):
+async def upload_images(place_id: int, file_data: List[Dict[str, bytes]] = File(...), db: Session = Depends(get_db)):
 
     # Save the images to DigitalOcean Spaces
     urls = []
-    for file in files:
-        file_contents = await file.read()
+    for file in file_data:
+        file_contents = file['file']
         file = BytesIO(file_contents)
-        #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
         filename = place_id
         bucket_name = 'reversers-images'
         object_key = f"base/{filename}"
@@ -146,12 +167,12 @@ def get_image(place_id:int, db:Session = Depends(get_db)):
 
 
 #Get all users
-@app.get("/users", response_model=List[UsersRead])
+@app.get("/users")
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return db.query(User).offset(skip).limit(limit).all()
 
 #Get specific USER based on id
-@app.get("/users/{user_id}", response_model=UsersRead)
+@app.get("/users/{user_id}")
 def read_users(user_id:int, db: Session = Depends(get_db)):
     return db.query(User).filter(User.user_id == user_id ).first()
 
