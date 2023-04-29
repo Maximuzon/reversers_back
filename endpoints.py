@@ -329,7 +329,7 @@ def get_images(place_id:int,db:Session = Depends(get_db)):
     pattern = r'(?<=com\/).*'
 
     for review in reviews:
-        url = review.image
+        url = str(review.image)
         match = re.search(pattern, url)
         print(match)
         if match:
