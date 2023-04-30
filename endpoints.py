@@ -123,7 +123,8 @@ def get_images(place_id: int, db: Session = Depends(get_db)):
 
 
 #Get all users
-@app.get("/users")
+
+@app.get("/users", response_model=List[UsersRead])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return db.query(User).offset(skip).limit(limit).all()
 
