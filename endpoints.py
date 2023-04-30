@@ -175,21 +175,24 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
     reviews_count = db.query(func.count(Review.review_id)).filter(Review.user_id == user_id).scalar()
     return reviews_count
 
-#add to the favourites
 @app.put("/user/addfavorite/{user_id}/{place_id}")
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
+    favourites = json.loads(user.favourites)
     if user.favourites:
-        if place_id not in user.favourites:
-            user.favourites.append(place_id)
+        if place_id not in favourites:
+            favourites.append(place_id)
             place = db.query(Place).filter(Place.place_id == place_id).first()
             place.likes += 1
     else:
-        user.favourites = [place_id]
+        favourites = [place_id]
 
-
+    user.favourites = json.dumps(favourites)
+    db.add(user)
     db.commit()
+
     return {"message": f"Added {place_id} to favorites of user {user_id}, increased the like count of place"}
+
 
 #update the user
 @app.put("/user/{user_id}")
