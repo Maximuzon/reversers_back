@@ -60,7 +60,7 @@ class Review(Base):
     place_id = Column(Integer, ForeignKey('places.place_id'))
     user_id = Column(Integer, ForeignKey('users.user_id'))
     date = Column(DateTime(timezone=False), nullable=False)
-    text = Column(String(255), nullable=False)
+    text = Column(String(1000), nullable=False)
     mark = Column(Integer, nullable=False)
     image = Column(String(1000), nullable=True)
 

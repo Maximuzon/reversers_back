@@ -44,7 +44,9 @@ s3 = session.client('s3',
                         aws_secret_access_key=SECRET_KEY)
 
 bucket_name = 'reversers-images'
-
+@app.get("/")
+async def root():
+    return {"message": "Не кроши на меня хлебушек."}
 
 # Dependency to get the database session
 def get_db():
