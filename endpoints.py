@@ -6,6 +6,7 @@ from typing import List, Dict
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+import sqlalchemy
 from sqlalchemy.orm import Session
 from sqlalchemy import Select, create_engine, MetaData, func, text, insert,update
 from sqlalchemy.orm import sessionmaker
@@ -50,10 +51,19 @@ async def root():
     return {"message": "Не кроши на меня хлебушек."}
 
 # Dependency to get the database session
+
 def get_db():
-    db_url = "mysql://doadmin:AVNS_ixs6LYwnPYYNRCz3SRl@db-reversers-do-user-13881334-0.b.db.ondigitalocean.com:25060/defaultdb?"
-    engine = create_engine(db_url)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db_url = sqlalchemy.engine.url.URL.create(
+        drivername="mysql+pymysql",
+        username="doadmin",
+        password="AVNS_ixs6LYwnPYYNRCz3SRl",
+        host="db-reversers-do-user-13881334-0.b.db.ondigitalocean.com",
+        port=25060,
+        database="defaultdb",
+        query={"charset": "utf8"},
+    )
+    engine = sqlalchemy.create_engine(db_url)
+    SessionLocal = sqlalchemy.orm.sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     try:
         yield db
