@@ -1,0 +1,6 @@
+services:
+- name: reversers-back
+  github:
+    repo: username/reversers-back
+  envs:
+    PYTHONUTF8: 1
