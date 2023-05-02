@@ -51,24 +51,16 @@ async def root():
     return {"message": "Не кроши на меня хлебушек."}
 
 # Dependency to get the database session
-
 def get_db():
-    db_url = sqlalchemy.engine.url.URL.create(
-        drivername="mysql+pymysql",
-        username="doadmin",
-        password="AVNS_ixs6LYwnPYYNRCz3SRl",
-        host="db-reversers-do-user-13881334-0.b.db.ondigitalocean.com",
-        port=25060,
-        database="defaultdb",
-        query={"charset": "utf8"},
-    )
-    engine = sqlalchemy.create_engine(db_url)
-    SessionLocal = sqlalchemy.orm.sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db_url = "mysql://doadmin:AVNS_ixs6LYwnPYYNRCz3SRl@db-reversers-do-user-13881334-0.b.db.ondigitalocean.com:25060/defaultdb?"
+    engine = create_engine(db_url)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
 # Endpoint to get all users
 
 @app.put("/uploadfile/{place_id}")
