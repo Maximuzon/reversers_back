@@ -26,9 +26,9 @@ class User(Base):
     token = Column(String(255), nullable=True, unique=True)
     preferences = Column(JSON, nullable=True)#У Леши называется placeTags
     favourites = Column(JSON, nullable=True)
-    anchors = Column(String(255), nullable=True)#json
-    rewards = Column(String(255), nullable=True)#json 
-    recommendations = Column(String(255), nullable=True)
+    anchors = Column(JSON(255), nullable=True)#json
+    rewards = Column(JSON(255), nullable=True)#json 
+    recommendations = Column(JSON(255), nullable=True)
 
 class Place(Base):
     __tablename__ = 'places'

@@ -238,17 +238,21 @@ async def upload_image(user_id: int, file: UploadFile = File(...), db: Session =
 
 @app.get("/user/avatar/{user_id}")
 def get_image(user_id:int, db:Session = Depends(get_db)):
-    place = db.query(User).filter(User.user_id == user_id).first() 
-    url = place.avatar
-    bucket_name = 'reversers-images'
-    pattern = r'(?<=com\/).*'
-    match = re.search(pattern, url)
-    print(match)
-    url_access = s3.generate_presigned_url(ClientMethod='get_object',
-                                Params={'Bucket': bucket_name,
-                                        'Key': match.group(0)},
-                                ExpiresIn=3600)
-    return url_access
+    user = db.query(User).filter(User.user_id == user_id).first() 
+    if user is None or user.avatar is None:
+        # Return a default "image not found" URL or message
+        return {"message": "Image not found"}
+    else:
+        url = user.avatar
+        bucket_name = 'reversers-images'
+        pattern = r'(?<=com\/).*'
+        match = re.search(pattern, url)
+        print(match)
+        url_access = s3.generate_presigned_url(ClientMethod='get_object',
+                                               Params={'Bucket': bucket_name,
+                                                       'Key': match.group(0)},
+                                               ExpiresIn=3600)
+        return url_access
 
 #Get all places
 @app.get("/places", response_model=List[PlacesRead])
@@ -378,10 +382,5 @@ async def get_all_tags(db: Session = Depends(get_db)):
     finally:
         db.close()
 
-# if __name__ == "__main__":
-#     uvicorn.run(app,host='0.0.0.0', port = 8000)
-
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host='0.0.0.0', port=port)
+    uvicorn.run(app,host='0.0.0.0', port = 8000)
