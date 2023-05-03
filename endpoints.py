@@ -181,7 +181,7 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
 @app.put("/user/addfavorite/{user_id}/{place_id}")
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
-    user.favourites += f",{place_id}"
+    user.favourites += f"{place_id},"
     place = db.query(Place).filter(Place.place_id == place_id).first()
     place.likes += 1
     db.add(user)
