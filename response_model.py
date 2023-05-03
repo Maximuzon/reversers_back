@@ -43,11 +43,11 @@ class CreateUser(BaseModel):
     coins: int
     avatar: Optional[str] = None
     status: Optional[str]
-    preferences: Dict[str, str] = None
-    favourites: Dict[str, Optional[str]] = None
-    anchors: Dict[str, Optional[str]] = None
-    rewards: Dict[str, Optional[str]] = None
-    recommendations: Dict[str, Optional[str]] = None
+    preferences: Dict[str, str] 
+    favourites: Dict[str, Optional[str]] 
+    anchors: Dict[str, Optional[str]]
+    rewards: Dict[str, Optional[str]] 
+    recommendations: Dict[str, Optional[str]] 
 
     class Config:
         orm_mode = True
