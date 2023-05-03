@@ -109,8 +109,6 @@ def get_images(place_id: int, db: Session = Depends(get_db)):
     if not place:
         raise HTTPException(status_code=404, detail="Place not found")
     images_json = place.images
-    if not images_json:
-        return "Place does not have an image"
     images_list = json.loads(images_json)
     pre_signed_urls = []
     for url in images_list:
@@ -183,19 +181,41 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
     favourites = json.loads(user.favourites)
-    if user.favourites:
-        if place_id not in favourites:
-            favourites.append(place_id)
-            place = db.query(Place).filter(Place.place_id == place_id).first()
-            place.likes += 1
-    else:
-        favourites = [place_id]
+    
+    # if user.favourites:
+    #     if place_id not in favourites.values():
+    #         favourites.update({f"{len(favourites)+1}": place_id})
+    #         place = db.query(Place).filter(Place.place_id == place_id).first()
+    #         place.likes += 1
+    # else:
+    #     favourites = {"1": place_id}
 
+    # user.favourites = json.dumps(favourites)
+    # db.add(user)
+    # db.commit()
+
+    # return {"message": f"Added {place_id} to favorites of user {user_id}, increased the like count of place"}
+
+@app.put("/user/addfavorite/aboba/{user_id}/{place_id}")
+def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
+    # Query the user's record from the database
+    user = db.query(User).filter(User.user_id == user_id).first()
+
+    # Load the JSON from the favourites field
+    favourites = json.loads(user.favourites)
+
+    # Add the new place_id value to the favourites dictionary
+    if not favourites:
+        favourites = [place_id]
+    elif place_id not in favourites:
+        favourites.append(place_id)
+
+    # Dump the updated JSON back to the favourites field
     user.favourites = json.dumps(favourites)
+
+    # Add the updated record to the database and commit the changes
     db.add(user)
     db.commit()
-
-    return {"message": f"Added {place_id} to favorites of user {user_id}, increased the like count of place"}
 
 
 #update the user
