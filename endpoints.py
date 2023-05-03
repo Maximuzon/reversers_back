@@ -361,7 +361,7 @@ def get_images(place_id:int,db:Session = Depends(get_db)):
 @app.get
 
 #GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-@app.get("/tags", response_class=JSONResponse)
+@app.get("/tags")
 async def get_all_tags(db: Session = Depends(get_db)):
     tags = {}
     try:
@@ -376,9 +376,7 @@ async def get_all_tags(db: Session = Depends(get_db)):
         # convert sets to lists
         for key in tags:
             tags[key] = list(set(tags[key]))
-        # set the appropriate headers for the response
-        headers = {"Content-Type": "application/json; charset=utf-8"}
-        return JSONResponse(content={"tags": tags}, headers=headers)
+        return {"tags": tags}
     finally:
         db.close()
 
