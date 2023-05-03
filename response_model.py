@@ -41,13 +41,13 @@ class CreateUser(BaseModel):
     gender:Optional[str]
     info_show: bool
     coins: int
-    avatar: Optional[str] = None # Set None as the default value for nullable fields
+    avatar: Optional[str] = None
     status: Optional[str]
     preferences: Dict[str, str] = None
     favourites: Optional[str] = None
-    anchors: Optional[str] = None #!!!!!!!!!!!!!!
-    rewards: Optional[str] = None #!!!!!!!!!!!!!!
-    recommendations: Optional[str] = None
+    anchors: Dict[str, Optional[str]] = None
+    rewards: Dict[str, Optional[str]] = None
+    recommendations: Dict[str, Optional[str]] = None
 
     class Config:
         orm_mode = True
