@@ -44,10 +44,10 @@ class CreateUser(BaseModel):
     avatar: Optional[str] = None
     status: Optional[str]
     preferences: Dict[str, str] 
-    favourites: Dict[str, Optional[str]] 
+    favourites: Optional[str] 
     anchors: Dict[str, Optional[str]]
     rewards: Dict[str, Optional[str]] 
-    recommendations: Dict[str, Optional[str]] 
+    recommendations: Optional[str]
 
     class Config:
         orm_mode = True

@@ -25,10 +25,10 @@ class User(Base):
     status = Column(String(255), nullable=False, default="client")
     token = Column(String(255), nullable=True, unique=True)
     preferences = Column(JSON, nullable=True)#У Леши называется placeTags
-    favourites = Column(JSON, nullable=True)
+    favourites = Column(String(1500), nullable=True)
     anchors = Column(JSON, nullable=True)#json
     rewards = Column(JSON, nullable=True)#json 
-    recommendations = Column(JSON, nullable=True)
+    recommendations = Column(String(1500), nullable=True)
 
 class Place(Base):
     __tablename__ = 'places'
