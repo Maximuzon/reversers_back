@@ -44,7 +44,7 @@ class CreateUser(BaseModel):
     avatar: Optional[str] = None
     status: Optional[str]
     preferences: Dict[str, str] = None
-    favourites: Optional[str] = None
+    favourites: Dict[str, Optional[str]] = None
     anchors: Dict[str, Optional[str]] = None
     rewards: Dict[str, Optional[str]] = None
     recommendations: Dict[str, Optional[str]] = None
