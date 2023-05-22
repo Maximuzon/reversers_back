@@ -2,17 +2,17 @@
 from io import BytesIO
 import json
 import re
-from typing import List, Dict
+from typing import List, Dict, Optional
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 import sqlalchemy
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import Select, create_engine, MetaData, func, text, insert,update
 from sqlalchemy.orm import sessionmaker
 import uvicorn
 from schemas import User,Place, Review
-from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, GetAllPlaces, Placestags, CreatePlace,CreateReview
+from response_model import ReviewRead, UsersRead, PlacesRead, CreateUser, CreatePlace,CreateReview, ReviewReadbyPlace
 import schemas
 from fastapi.middleware.cors import CORSMiddleware
 from boto3 import session
@@ -60,6 +60,23 @@ def get_db():
         yield db
     finally:
         db.close()
+
+#image generative function 
+def generate_image_url(url: str):
+    if url is not None:
+        bucket_name = 'reversers-images'
+        pattern = r'(?<=com\/).*'
+        match = re.search(pattern, url)
+        url_access = s3.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={'Bucket': bucket_name, 'Key': match.group(0)},
+            ExpiresIn=3600
+        )
+        return url_access
+    return None
+
+
+
 
 # Endpoint to get all users
 
@@ -272,9 +289,38 @@ def read_review(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return db.query(Review).offset(skip).limit(limit).all()
 
 #Get specific REVIEW based on id
-@app.get("/review/{place_id}", response_model=List[ReviewRead])
+
+@app.get("/review/{place_id}", response_model=List[ReviewReadbyPlace])
 def read_places(place_id: int, db: Session = Depends(get_db)):
-    return db.query(Review).filter(Review.place_id == place_id ).all()
+    reviews = (
+        db.query(Review)
+        .filter(Review.place_id == place_id)
+        .options(joinedload(Review.user))  # Include user relationship
+        .all()
+    )
+
+    result = []
+    for review in reviews:
+        url = review.image
+        if url is not None:
+            review.image = generate_image_url(url)
+
+        user_id = review.user_id
+        user = db.query(User).filter(User.user_id == user_id).first()
+        login = user.login if user else None
+        avatar = generate_image_url(user.avatar) if user else None
+    
+
+        review_read = ReviewReadbyPlace.from_orm(review)
+        review_read.login = login
+        review_read.avatar = avatar
+
+        result.append(review_read)
+
+    return result
+    
+
+
 
 #add new REVIEW
 @app.post("/reviews")

@@ -112,7 +112,21 @@ class ReviewRead(BaseModel):
     date: Timestamp
     text: str
     mark: int
-    image: Optional[str]
+    image: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class ReviewReadbyPlace(BaseModel):
+    review_id: int
+    place_id: int
+    user_id: int
+    date: Timestamp
+    text: str
+    mark: int
+    image: Optional[str] = None
+    login: Optional[str] = None
+    avatar: Optional[str] = None
 
     class Config:
         orm_mode = True
