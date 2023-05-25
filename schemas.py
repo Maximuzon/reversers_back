@@ -25,7 +25,7 @@ class User(Base):
     status = Column(String(255), nullable=False, default="client")
     token = Column(String(255), nullable=True, unique=True)
     preferences = Column(JSON, nullable=True)#У Леши называется placeTags
-    favourites = Column(String(1500), nullable=True)
+    favourites = Column(JSON, nullable=True)
     anchors = Column(JSON, nullable=True)#json
     rewards = Column(JSON, nullable=True)#json 
     recommendations = Column(String(1500), nullable=True)

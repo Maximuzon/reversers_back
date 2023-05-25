@@ -194,17 +194,43 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
     reviews_count = db.query(func.count(Review.review_id)).filter(Review.user_id == user_id).scalar()
     return reviews_count
 
-#add favorite
+# #add favorite
+# @app.put("/user/addfavorite/{user_id}/{place_id}")
+# def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
+#     user = db.query(User).filter(User.user_id == user_id).first()
+#     user.favourites += f"{place_id},"
+#     place = db.query(Place).filter(Place.place_id == place_id).first()
+#     place.likes += 1
+#     db.add(user)
+#     db.commit()
+    # leshagei = user.favourites
+    # leshagei.update({f"{len(leshagei)+1}":place_id})
+
+
 @app.put("/user/addfavorite/{user_id}/{place_id}")
 def add_favorite(user_id: int, place_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == user_id).first()
-    user.favourites += f"{place_id},"
+    favourites = json.loads(user.favourites) if user.favourites else {}
     place = db.query(Place).filter(Place.place_id == place_id).first()
-    place.likes += 1
+
+    # Check if the place is already in the user's favorites
+    if str(place_id) in favourites:
+        # Remove the place from the user's favorites
+        favourites.pop(str(place_id))
+        # Decrease the like count for the place
+        place.likes -= 1
+    else:
+        # Add the place to the user's favorites
+        favourites[str(place_id)] = place_id
+        # Increase the like count for the place
+        place.likes += 1
+
+    user.favourites = json.dumps(favourites)
     db.add(user)
+    db.add(place)
     db.commit()
-    # leshagei = user.favourites
-    # leshagei.update({f"{len(leshagei)+1}":place_id})
+
+
     
 
 

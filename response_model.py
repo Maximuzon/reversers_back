@@ -1,8 +1,8 @@
 import json
-from typing import List, Optional,Any
+from typing import List, Optional,Any,Union
 from typing import Dict
 from MySQLdb import Timestamp
-from pydantic import BaseModel, EmailStr, validator, Json
+from pydantic import BaseModel, EmailStr, validator, Json, Field
 from sqlalchemy import DateTime
 class UsersRead(BaseModel):
     user_id: int
@@ -19,7 +19,7 @@ class UsersRead(BaseModel):
     avatar: Optional[str] = None # Set None as the default value for nullable fields
     status: str
     preferences: Dict[str, Optional[str]]
-    favourites: Optional[str] 
+    favourites: Optional[Dict[str, int]] = {}
     anchors: Dict[str, Optional[str]] #!!!!!!!!!!!!!!
     rewards: Dict[str, Optional[str]]  #!!!!!!!!!!!!!!
     recommendations: Optional[str] 
@@ -44,7 +44,7 @@ class CreateUser(BaseModel):
     avatar: Optional[str] = None
     status: Optional[str]
     preferences: Dict[str, str] 
-    favourites: Optional[str] 
+    favourites: Optional[Dict[str, int]] = {}
     anchors: Dict[str, Optional[str]]
     rewards: Dict[str, Optional[str]] 
     recommendations: Optional[str]
