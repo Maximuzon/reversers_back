@@ -18,10 +18,10 @@ class UsersRead(BaseModel):
     coins: int
     avatar: Optional[str] = None # Set None as the default value for nullable fields
     status: str
-    preferences: Optional[str]
+    preferences: Dict[str, Optional[str]]
     favourites: Optional[str] 
-    anchors: Optional[str] #!!!!!!!!!!!!!!
-    rewards: Optional[str]  #!!!!!!!!!!!!!!
+    anchors: Dict[str, Optional[str]] #!!!!!!!!!!!!!!
+    rewards: Dict[str, Optional[str]]  #!!!!!!!!!!!!!!
     recommendations: Optional[str] 
 
     class Config:
