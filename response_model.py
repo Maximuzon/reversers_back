@@ -131,6 +131,8 @@ class ReviewReadbyPlace(BaseModel):
     image: Optional[str] = None
     login: Optional[str] = None
     avatar: Optional[str] = None
+    likes: int
+    dislikes: int
 
     class Config:
         orm_mode = True
