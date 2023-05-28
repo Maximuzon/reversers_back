@@ -29,6 +29,8 @@ class User(Base):
     anchors = Column(JSON, nullable=True)#json
     rewards = Column(JSON, nullable=True)#json 
     recommendations = Column(String(1500), nullable=True)
+    reviews_liked = Column(JSON, nullable=True)
+    reviews_disliked = Column(JSON, nullable=True)
 
 class Place(Base):
     __tablename__ = 'places'
@@ -63,6 +65,8 @@ class Review(Base):
     text = Column(String(1000), nullable=False)
     mark = Column(Integer, nullable=False)
     image = Column(String(1000), nullable=True)
+    likes = Column(Integer, nullable=False, default=0)
+    dislikes = Column(Integer, nullable=False, default=0)
 
     place = relationship("Place", backref="reviews")
     user = relationship("User", backref="reviews")

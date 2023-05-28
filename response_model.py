@@ -23,6 +23,8 @@ class UsersRead(BaseModel):
     anchors: Dict[str, Optional[str]] #!!!!!!!!!!!!!!
     rewards: Dict[str, Optional[str]]  #!!!!!!!!!!!!!!
     recommendations: Optional[str] 
+    reviews_liked: Optional[Dict[str, int]] = {}
+    reviews_disliked: Optional[Dict[str, int]] = {}
 
     class Config:
         orm_mode = True
@@ -48,6 +50,8 @@ class CreateUser(BaseModel):
     anchors: Dict[str, Optional[str]]
     rewards: Dict[str, Optional[str]] 
     recommendations: Optional[str]
+    reviews_liked: Optional[Dict[str, int]] = {}
+    reviews_disliked: Optional[Dict[str, int]] = {}
 
     class Config:
         orm_mode = True

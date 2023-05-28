@@ -423,7 +423,84 @@ def get_images(place_id:int,db:Session = Depends(get_db)):
     return url_dict
 
 # receive place_id, return dict["review_id":image]
-@app.get
+
+@app.put("/reviews/{user_id}/{review_id}/like")
+def like_review(review_id: int, user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found. Please login or create a new user.")
+    
+    review = db.query(Review).filter(Review.review_id == review_id).first()
+    if review is None:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    reviews_liked = json.loads(user.reviews_liked) if user.reviews_liked else {}
+    reviews_disliked = json.loads(user.reviews_disliked) if user.reviews_disliked else {}
+
+    str_review_id = str(review_id)
+    if str_review_id not in reviews_disliked:
+        if str_review_id not in reviews_liked:
+            review.likes += 1
+            reviews_liked[str_review_id] = review_id
+            user.reviews_liked = json.dumps(reviews_liked)
+
+            db.commit()
+            return {"message": "Review liked successfully"}
+        else:
+            review.likes -= 1
+            del reviews_liked[str_review_id]
+            user.reviews_liked = json.dumps(reviews_liked)
+
+            db.commit()
+            return {"message": "Review like removed"}
+
+    return {"message": "Review cannot be liked by the user. Already exists in opposite array"}
+
+
+@app.put("/reviews/{user_id}/{review_id}/dislike")
+def dislike_review(review_id: int, user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found. Please login or create a new user.")
+    
+    review = db.query(Review).filter(Review.review_id == review_id).first()
+    if review is None:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    reviews_liked = json.loads(user.reviews_liked) if user.reviews_liked else {}
+    reviews_disliked = json.loads(user.reviews_disliked) if user.reviews_disliked else {}
+
+    str_review_id = str(review_id)
+    if str_review_id not in reviews_liked:
+        if str_review_id not in reviews_disliked:
+            review = db.query(Review).filter(Review.review_id == review_id).first()
+            review.dislikes += 1
+            reviews_disliked[str_review_id] = review_id
+            user.reviews_disliked = json.dumps(reviews_disliked)
+
+            db.commit()
+            return {"message": "Review disliked successfully"}
+        else:
+            review = db.query(Review).filter(Review.review_id == review_id).first()
+            review.dislikes -= 1
+            del reviews_disliked[str_review_id]
+            user.reviews_disliked = json.dumps(reviews_disliked)
+
+            db.commit()
+            return {"message": "Review dislike removed"}
+
+    return {"message": "Review cannot be disliked by the user. Already exists in opposite array"}
+
+@app.get("/user/{user_id}/like")#дописать эндпоинты
+def return_likes(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    return {user.reviews_liked}
+
+@app.get("/user/{user_id}/dislike")#дописать эндпоинты
+def return_likes(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.user_id == user_id).first()
+    return {user.reviews_disliked}
+
 
 #GET TAGS WITHOUT REPETITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @app.get("/tags")
