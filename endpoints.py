@@ -34,18 +34,18 @@ app.add_middleware(
 )
 
 
-ACCESS_ID = 'DO00TEVUBHKB6D7XRJXY'
-SECRET_KEY = 'iGVqWV85WDk+7RU9svSJOHrFQ4VGsrnYAXp3ILKeDaU'
+ACCESS_ID = 'DO00EJLHPYCCTDA4TWBF'
+SECRET_KEY = 'ILuVkUqKIyaBjJkXrfBNUFCwWbsxIgGiskahP3WY7f4'
 
 # Initiate session
 session = session.Session()
 s3 = session.client('s3',
                         region_name='fra1',
-                        endpoint_url='https://reversers-images.fra1.digitaloceanspaces.com',
+                        endpoint_url='https://reversers-api-spaces.fra1.digitaloceanspaces.com',
                         aws_access_key_id=ACCESS_ID,
                         aws_secret_access_key=SECRET_KEY)
 
-bucket_name = 'reversers-images'
+bucket_name = 'reversers-api-spaces'
 @app.get("/")
 async def root():
     return {"message": "Не кроши на меня хлебушек."}
@@ -64,7 +64,7 @@ def get_db():
 #image generative function 
 def generate_image_url(url: str):
     if url is not None:
-        bucket_name = 'reversers-images'
+        bucket_name = 'reversers-api-spaces'
         pattern = r'(?<=com\/).*'
         match = re.search(pattern, url)
         url_access = s3.generate_presigned_url(
@@ -88,7 +88,7 @@ async def upload_image(place_id: int, file: UploadFile = File(...), db: Session 
     file = BytesIO(file_contents)
     timestamp = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     filename = f"{place_id}_{timestamp}"
-    bucket_name = 'reversers-images'
+    bucket_name = 'reversers-api-spaces'
     print(filename)
     object_key = f"base/{filename}"
     print("set object key")
@@ -255,7 +255,7 @@ async def upload_image(user_id: int, file: UploadFile = File(...), db: Session =
     file = BytesIO(file_contents)
     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     filename = user_id
-    bucket_name = 'reversers-images'
+    bucket_name = 'reversers-api-spaces'
     print(filename)
     object_key = f"base/{filename}"
     print("set object key")
@@ -280,7 +280,7 @@ def get_image(user_id:int, db:Session = Depends(get_db)):
         return {"message": "Image not found"}
     else:
         url = user.avatar
-        bucket_name = 'reversers-images'
+        bucket_name = 'reversers-api-spaces'
         pattern = r'(?<=com\/).*'
         match = re.search(pattern, url)
         print(match)
@@ -365,7 +365,7 @@ async def upload_image(review_id: int, file: UploadFile = File(...), db: Session
     file = BytesIO(file_contents)
     #filename = f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
     filename = review_id
-    bucket_name = 'reversers-images'
+    bucket_name = 'reversers-api-spaces'
     print(filename)
     object_key = f"base/{filename}"
     print("set object key")
@@ -388,7 +388,7 @@ async def upload_image(review_id: int, file: UploadFile = File(...), db: Session
 def get_image(review_id:int, db:Session = Depends(get_db)):
     place = db.query(Review).filter(Review.review_id == review_id).first() 
     url = place.image
-    bucket_name = 'reversers-images'
+    bucket_name = 'reversers-api-spaces'
     pattern = r'(?<=com\/).*'
     match = re.search(pattern, url)
     print(match)
@@ -404,7 +404,7 @@ def get_images(place_id:int,db:Session = Depends(get_db)):
     reviews = db.query(Review).filter(Review.place_id==place_id).all()
     
     url_dict = {}
-    bucket_name = 'reversers-images'
+    bucket_name = 'reversers-api-spaces'
     pattern = r'(?<=com\/).*'
 
     for review in reviews:
