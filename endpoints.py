@@ -178,10 +178,12 @@ async def check_user(data: dict, db: Session = Depends(get_db)):
 @app.get("/user/reviews/{user_id}")
 def get_reviews(user_id:int, db: Session = Depends(get_db)):
      reviews = db.query(Review).filter(Review.user_id == user_id).all()
+     user = db.query(User).filter(User.user_id ==user_id).first()
      review_list = []
      for review in reviews:
          review_dict = {
              "review_id": review.review_id,
+             "login": user.login,
              "place_id": review.place_id,
              "user_id": review.user_id,
              "date": review.date,
