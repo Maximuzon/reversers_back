@@ -571,7 +571,7 @@ def calculate_ratings():
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 scheduler = BackgroundScheduler()
-scheduler.add_job(calculate_ratings, 'interval', minutes=1)  
+scheduler.add_job(calculate_ratings, 'interval', minutes=10)  
 scheduler.start()
 
 
