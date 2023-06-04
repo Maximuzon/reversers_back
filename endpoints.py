@@ -191,7 +191,8 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
              "mark": review.mark,
              "review_likes": review.likes,
              'review_dislikes':review.dislikes,
-             'avatar': generate_image_url(review.image)
+             'avatar': generate_image_url(review.image),
+             'review_image': generate_image_url(review.image)
          }
          review_list.append(review_dict)
      return review_list
