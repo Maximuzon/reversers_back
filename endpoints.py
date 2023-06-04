@@ -189,10 +189,10 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
              "date": review.date,
              "text": review.text,
              "mark": review.mark,
-             "review_likes": review.likes,
-             'review_dislikes':review.dislikes,
+             "likes": review.likes,
+             'dislikes':review.dislikes,
              'avatar': generate_image_url(review.image),
-             'review_image': generate_image_url(review.image)
+             'image': generate_image_url(review.image)
          }
          review_list.append(review_dict)
      return review_list
