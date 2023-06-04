@@ -76,6 +76,7 @@ class PlacesRead(BaseModel):
     tags: Dict[str, Optional[str]] = None
     images: Optional[str] = None
     marks: Dict[str, Optional[str]] = None
+    rating: float = None
     class Config:
         orm_mode = True
 
@@ -98,6 +99,7 @@ class CreatePlace(BaseModel):
     tags: Dict[str, Optional[str]] = None
     images: Optional[List[str]] = None
     marks: Dict[str, Optional[str]] = None
+    rating: float = None
 
     class Config:
         orm_mode = True

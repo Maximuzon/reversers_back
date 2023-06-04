@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, JSON
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, JSON, FLOAT
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -52,6 +52,7 @@ class Place(Base):
     tags = Column(JSON, nullable=True)
     images = Column(JSON, nullable=True)
     marks = Column(JSON, nullable=True)
+    rating = Column(FLOAT, nullable = True)
 
 
 

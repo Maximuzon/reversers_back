@@ -17,6 +17,8 @@ import schemas
 from fastapi.middleware.cors import CORSMiddleware
 from boto3 import session
 from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+import logging
 #uvicorn endpoints:app --reload
 #c:/Users/Max/virtualENV/Scripts/Activate.ps1
 
@@ -184,7 +186,10 @@ def get_reviews(user_id:int, db: Session = Depends(get_db)):
              "user_id": review.user_id,
              "date": review.date,
              "text": review.text,
-             "mark": review.mark
+             "mark": review.mark,
+             "review_likes": review.likes,
+             'review_dislikes':review.dislikes,
+             'avatar': generate_image_url(review.image)
          }
          review_list.append(review_dict)
      return review_list
@@ -521,6 +526,52 @@ async def get_all_tags(db: Session = Depends(get_db)):
         return {"tags": tags}
     finally:
         db.close()
+
+@app.get("/test/cycle")#дописать эндпоинты
+def return_likes(db: Session = Depends(get_db)):
+    places = db.query(Place).all()
+    for place in places:
+        reviews = db.query(Review).filter_by(place_id=place.place_id).all()
+        if reviews:
+            total_mark = sum(review.mark for review in reviews)
+            average_mark = total_mark / len(reviews)
+            place.rating = average_mark
+
+def get_db_sch():
+    db_url = "mysql://doadmin:AVNS_nmPqJUMf-G0O503ByqG@db-mysql-fra1-14046-do-user-14174856-0.b.db.ondigitalocean.com:25060/defaultdb?"
+    engine = create_engine(db_url)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    try:
+        return db  # Return the database session directly
+    finally:
+        db.close()
+
+
+
+def calculate_ratings():
+    db = get_db_sch()  # Call get_db to retrieve the database session
+    places = db.query(Place).all()
+    logging.info("Opened connection, starting cycle")
+    for place in places:
+        reviews = db.query(Review).filter_by(place_id=place.place_id).all()
+        logging.info("got reviews, working")
+        if reviews:
+            total_mark = sum(review.mark for review in reviews)
+            average_mark = total_mark / len(reviews)
+            place.rating = average_mark
+        else:
+            place.rating = None
+    db.commit() 
+
+    logging.info("Rating calculation job completed successfully.")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+scheduler = BackgroundScheduler()
+scheduler.add_job(calculate_ratings, 'interval', minutes=1)  
+scheduler.start()
+
 
 if __name__ == "__main__":
     uvicorn.run(app,host='0.0.0.0', port = 8000)
