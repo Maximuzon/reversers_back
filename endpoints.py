@@ -31,7 +31,7 @@ import logging
 #эндпоинты по возвращению нескольких изображений в виде словаря. Изменить поле images в Place_id done
 #эндпоинты. по нажатию на сердечко, добавить пользователю в favourites атрибту place_id.  в таблице place этому же place_id прибавить +1 в likes. done
 
-app = FastAPI()
+app = FastAPI(debug=True)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # здесь можно указать список разрешенных origin
