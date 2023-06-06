@@ -2,6 +2,11 @@
 from io import BytesIO
 import json
 import re
+import mysql.connector
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Dict, Optional
 from fastapi import FastAPI, Depends,File, HTTPException, UploadFile
 from fastapi.encoders import jsonable_encoder
@@ -551,6 +556,8 @@ def get_db_sch():
         db.close()
 
 
+    
+
 
 def calculate_ratings():
     db = get_db_sch()  # Call get_db to retrieve the database session
@@ -574,6 +581,90 @@ logging.basicConfig(level=logging.INFO)
 scheduler = BackgroundScheduler()
 scheduler.add_job(calculate_ratings, 'interval', minutes=10)  
 scheduler.start()
+
+
+
+@app.get('/recommendation/model/{user_id}')
+def recommendations(user_id: int):
+
+
+    config = {
+    'user': 'doadmin',
+    'password': 'AVNS_nmPqJUMf-G0O503ByqG',
+    'host': 'db-mysql-fra1-14046-do-user-14174856-0.b.db.ondigitalocean.com',
+    'port': 25060,
+    'database': 'defaultdb',
+    }
+
+    cnx = mysql.connector.connect(**config)
+    cursor = cnx.cursor()
+
+    place_query = "SELECT place_id, name, tags, rating FROM places"
+    cursor.execute(place_query)
+    places_result = cursor.fetchall()
+
+    places_df = pd.DataFrame(places_result, columns=['place_id', 'name', 'tags', 'rating'])
+    places_df['tags'] = places_df['tags'].apply(json.loads)
+
+    user_query = "SELECT user_id, preferences FROM users"
+    cursor.execute(user_query)
+    users_result = cursor.fetchall()
+
+    users_df = pd.DataFrame(users_result, columns=['user_id', 'preferences'])
+    users_df['preferences'] = users_df['preferences'].apply(json.loads)
+
+    users_df['preferences'] = users_df['preferences'].apply(lambda x: list(x.values()))
+
+    places_df['tags'] = places_df['tags'].apply(lambda x: list(x.values()))
+
+    def remove_empty_tags(list_of_tags):
+        new_list = []
+        for i in list_of_tags:
+            if i != '':
+                new_list.append(i)
+        return new_list
+
+    places_df["tags"] = places_df["tags"].apply(lambda x: remove_empty_tags(x))
+
+    empty_preferences = users_df[users_df['preferences'].apply(len) == 0]
+    for index, row in empty_preferences.iterrows():
+        non_empty_preferences = users_df[users_df['preferences'].apply(len) > 0]
+        random_user_preferences = non_empty_preferences.sample(n=1)['preferences'].values[0]
+        users_df.at[index, 'preferences'] = random_user_preferences
+
+
+    cursor.close()
+    cnx.close()
+
+
+    users_df['preferences'] = users_df['preferences'].apply(lambda x: ' '.join(x))
+
+    places_df['tags'] = places_df['tags'].apply(lambda x: ' '.join(x))
+
+    vectorizer = CountVectorizer()
+    preferences_vectors = vectorizer.fit_transform(users_df['preferences'])
+    tags_vectors = vectorizer.transform(places_df['tags'])
+
+    cosine_similarities = cosine_similarity(preferences_vectors, tags_vectors)
+
+    num_recommendations = 10
+    recommendations_df = pd.DataFrame(index=users_df['user_id'], columns=[f'recommendation_{i+1}' for i in range(num_recommendations)])
+
+    for i, user_row in users_df.iterrows():
+        user_id_model = user_row['user_id']
+        user_cosine_similarities = cosine_similarities[i]
+        
+        top_indices = np.argsort(user_cosine_similarities)[::-1][:num_recommendations]
+        
+        top_recommendations = places_df.loc[top_indices, ['place_id', 'name']]
+        recommendations_df.loc[user_id_model] = top_recommendations['place_id'].tolist()
+    needed_id = user_id          
+    return recommendations_df[recommendations_df.index == needed_id]
+
+
+
+
+
 
 
 if __name__ == "__main__":
